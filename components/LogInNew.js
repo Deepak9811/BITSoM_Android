@@ -120,8 +120,10 @@ export default class LogInNew extends Component {
     this.setState({ loader: true });
     // console.log(this.state.email, this.state.pass, this.state.purposeValue);
 
+    let emails = this.state.email.trim()
+
     fetch(
-      `${API_URL}LIBCON-PATINFO&parameter=${this.state.email}`,
+      `${API_URL}LIBCON-PATINFO&parameter=${emails}`,
       {
         method: 'GET',
         headers: {

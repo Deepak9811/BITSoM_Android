@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   TouchableOpacity,
   StyleSheet,
@@ -6,17 +6,20 @@ import {
   ActivityIndicator,
   Text,
   TextInput,
-  ScrollView, Alert, ToastAndroid, Linking
+  ScrollView,
+  Alert,
+  ToastAndroid,
+  Linking,
 } from 'react-native';
 
-import { Appbar } from 'react-native-paper';
+import {Appbar} from 'react-native-paper';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import LinearGradient from 'react-native-linear-gradient';
 // import * as Animatable from 'react-native-animatable';
-import { Picker as SelectPicker } from '@react-native-picker/picker';
+import {Picker as SelectPicker} from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import {API_URL} from "@env"
+import {API_URL} from '@env';
 
 export default class About extends Component {
   constructor(props) {
@@ -28,11 +31,15 @@ export default class About extends Component {
       pickerIndex: '',
       searchMeeting: '',
       listArray: [],
-      purposeData: [{ "type": "Title", id: "1" }, { "type": "Author", id: "2" }, { "type": "Publisher", id: "3" }],
+      purposeData: [
+        {type: 'Title', id: '1'},
+        {type: 'Author', id: '2'},
+        {type: 'Publisher', id: '3'},
+      ],
       searchLoader: false,
       showSearchContent: false,
       hidePubliser: true,
-      bookType: ""
+      bookType: '',
     };
   }
 
@@ -51,24 +58,26 @@ export default class About extends Component {
   }
 
   checkCatalog() {
-    if (this.state.bookType === "") {
-      Alert.alert("Wrong Action", "Please Select Search Criteria.", [
-        { text: 'Okay' }
-      ], { cancelable: true })
+    if (this.state.bookType === '') {
+      Alert.alert(
+        'Wrong Action',
+        'Please Select Search Criteria.',
+        [{text: 'Okay'}],
+        {cancelable: true},
+      );
     } else {
       // console.log("bookType data :---", this.state.bookType)
-      this.searchVisitor()
+      this.searchVisitor();
     }
   }
 
-  
   async searchVisitor(value) {
     this.setState({
       listArray: [],
     });
 
     if (this.state.searchMeeting.length > 0) {
-      this.setState({ listArray: [], showSearchContent: false });
+      this.setState({listArray: [], showSearchContent: false});
 
       this.setState({
         searchLoader: true,
@@ -91,7 +100,7 @@ export default class About extends Component {
           data.json().then(resp => {
             console.log('searcher =>', resp.data);
 
-            if (resp.status === "success") {
+            if (resp.status === 'success') {
               if (resp.data.response.length > 0) {
                 // console.log('search =>', resp);
                 this.setState({
@@ -108,7 +117,8 @@ export default class About extends Component {
               );
               this.setState({
                 searchLoader: false,
-                message: 'Sorry, We could not find any results for your search criteria. Please try again.',
+                message:
+                  'Sorry, We could not find any results for your search criteria. Please try again.',
               });
             }
           });
@@ -121,7 +131,7 @@ export default class About extends Component {
           );
           console.log(
             'There has been a problem with your fetch operation: ' +
-            error.message,
+              error.message,
           );
           this.setState({
             searchLoader: false,
@@ -153,7 +163,9 @@ export default class About extends Component {
       this.setState({
         showSearchContent: false,
       });
-      Alert.alert("", "Please enter search text.", [{ text: "Okay" }], { cancelable: true });
+      Alert.alert('', 'Please enter search text.', [{text: 'Okay'}], {
+        cancelable: true,
+      });
     }
   }
 
@@ -174,9 +186,8 @@ export default class About extends Component {
     }
   }
 
-  onPickerValue(value, index,) {
-
-    this.state.bookType = this.state.purposeData[index - 1].type
+  onPickerValue(value, index) {
+    this.state.bookType = this.state.purposeData[index - 1].type;
 
     this.setState({
       purposeIndexValue: value,
@@ -185,7 +196,7 @@ export default class About extends Component {
     });
 
     // , () => {
-    console.log("purpose data :---", this.state.bookType)
+    console.log('purpose data :---', this.state.bookType);
     // }
 
     // this.state.pickerIndex = index;
@@ -196,7 +207,7 @@ export default class About extends Component {
       <View style={styles.container}>
         <Appbar.Header style={styles.ttl}>
           <TouchableOpacity
-            style={{ paddingLeft: '2%' }}
+            style={{paddingLeft: '2%'}}
             onPress={() => this.props.navigation.goBack()}>
             <AntDesign name="arrowleft" color="#05375a" size={25} />
           </TouchableOpacity>
@@ -209,7 +220,6 @@ export default class About extends Component {
             <ActivityIndicator color="#57A3FF" size="large" />
           </View>
         )}
-
 
         {this.state.searchLoader && (
           <View
@@ -226,27 +236,23 @@ export default class About extends Component {
         )}
 
         <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={{ margin: 10, marginLeft: '5%', marginRight: '5%' }}>
-
+          <View style={{margin: 10, marginLeft: '5%', marginRight: '5%'}}>
             {/* ===============INFO======================= */}
             <View style={styles.uDetail}>
               <Text style={styles.uNme}>Hello</Text>
               <Text style={styles.uNme}>{this.state.name}</Text>
-              <Text style={{ marginTop: 10, color: '#8A8A8A' }}>
-                Welcome to Learning Resource Center, BITSoM, Mumbai
+              <Text style={{marginTop: 10, color: '#8A8A8A'}}>
+                Welcome to Learning Resource Center, BITSoM
               </Text>
-
             </View>
 
-            <Text style={{ marginTop: 10, color: '#8A8A8A' }}>
+            <Text style={{marginTop: 10, color: '#8A8A8A'}}>
               Use the following form to search your library catalog.
             </Text>
 
-
-
             <View style={styles.pkr}>
               <SelectPicker
-                style={{ width: '100%' }}
+                style={{width: '100%'}}
                 selectedValue={this.state.purposeIndexValue}
                 onValueChange={(value, index) => {
                   this.onPickerValue(value, index);
@@ -258,7 +264,11 @@ export default class About extends Component {
                   enabled={this.state.disble ? false : true}
                 />
                 {this.state.purposeData.map((item, i) => (
-                  <SelectPicker.item label={item.type} color="#000" value={item.id} />
+                  <SelectPicker.item
+                    label={item.type}
+                    color="#000"
+                    value={item.id}
+                  />
                 ))}
               </SelectPicker>
             </View>
@@ -269,16 +279,13 @@ export default class About extends Component {
                 style={styles.searchInputStyle}
                 value={this.state.searchMeeting}
                 onChangeText={value => {
-                  this.setState({ searchMeeting: value });
+                  this.setState({searchMeeting: value});
                 }}
               />
-
             </View>
 
-            <View style={{ marginTop: '5%' }}>
-              <TouchableOpacity
-
-                onPress={value => this.checkCatalog(value)}>
+            <View style={{marginTop: '5%'}}>
+              <TouchableOpacity onPress={value => this.checkCatalog(value)}>
                 <LinearGradient
                   colors={['#f68823', '#b03024']}
                   style={styles.signIn}>
@@ -295,26 +302,24 @@ export default class About extends Component {
               </TouchableOpacity>
             </View>
 
-
-
-
             {this.state.showSearchContent ? (
-              <LinearGradient
-                colors={['#fff', '#fff']}
-                style={styles.dropdown}>
-                <Text style={styles.dropdown, { color: '#8A8A8A', marginBottom: 15 }}>
-                  Following is the list of titles we found based on your search criteria. You can click on individual title for a detailed view.
+              <LinearGradient colors={['#fff', '#fff']} style={styles.dropdown}>
+                <Text
+                  style={
+                    (styles.dropdown, {color: '#8A8A8A', marginBottom: 15})
+                  }>
+                  Following is the list of titles we found based on your search
+                  criteria. You can click on individual title for a detailed
+                  view.
                 </Text>
-
-
 
                 <View
                   style={{
                     paddingTop: '5%',
                     width: '100%',
-                    backgroundColor: "#eff7ee",
-                    paddingLeft: "3%",
-                    paddingRight: "3%",
+                    backgroundColor: '#eff7ee',
+                    paddingLeft: '3%',
+                    paddingRight: '3%',
                   }}>
                   <View style={styles.flatstyles}>
                     <ScrollView showsVerticalScrollIndicator={false}>
@@ -327,15 +332,14 @@ export default class About extends Component {
                         {this.state.listArray.map((item, i) => {
                           {
                             // console.log('item =>', item[2]);
-                            if(item[2] === null){
-                              this.state.showitem = false
-                             
+                            if (item[2] === null) {
+                              this.state.showitem = false;
+
                               // console.log("empty",this.state.showitem)
-                            }else{
-                              this.state.showitem = true
+                            } else {
+                              this.state.showitem = true;
                               // console.log("data",this.state.showitem)
                             }
-
                           }
                           return (
                             <React.Fragment key={i}>
@@ -367,7 +371,12 @@ export default class About extends Component {
                                         {item[1]}
                                       </Text>
 
-                                      <Text style={{display: this.state.showitem ? "flex" :"none"}}>
+                                      <Text
+                                        style={{
+                                          display: this.state.showitem
+                                            ? 'flex'
+                                            : 'none',
+                                        }}>
                                         {item[2]}
                                       </Text>
                                     </View>
@@ -375,27 +384,20 @@ export default class About extends Component {
                                     <View
                                       style={[
                                         styles.oldBookStyle,
-                                        { marginTop: 10 },
+                                        {marginTop: 10},
                                       ]}>
                                       <Text
-                                        style={
-                                          styles.currentIssuesDetailsMap
-                                        }>
+                                        style={styles.currentIssuesDetailsMap}>
                                         By :{' '}
-                                        <Text
-                                          style={styles.bookAuther}>
+                                        <Text style={styles.bookAuther}>
                                           {item[3]}
                                         </Text>
                                       </Text>
                                     </View>
 
-
-
                                     <View style={styles.oldBookStyle}>
                                       <Text
-                                        style={
-                                          styles.currentIssuesDetailsMap
-                                        }>
+                                        style={styles.currentIssuesDetailsMap}>
                                         Publisher :{' '}
                                         <Text
                                           style={{
@@ -429,7 +431,6 @@ export default class About extends Component {
                 </View>
               </>
             )}
-
           </View>
         </ScrollView>
 
@@ -450,14 +451,9 @@ export default class About extends Component {
               alignItems: 'center',
             }}>
             <Text>Powered by</Text>
-            <Text style={{ color: '#f68823' }}> LIBCON</Text>
+            <Text style={{color: '#f68823'}}> LIBCON</Text>
           </TouchableOpacity>
         </View>
-
-
-
-
-
       </View>
     );
   }
@@ -494,7 +490,7 @@ const styles = StyleSheet.create({
     margin: 0,
     color: 'black',
   },
-  
+
   searchSt: {
     marginTop: 15,
     width: '100%',
@@ -554,7 +550,6 @@ const styles = StyleSheet.create({
     marginTop: 5,
     fontSize: 15,
   },
-
 
   uDetail: {
     // marginTop: 10,

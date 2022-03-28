@@ -120,8 +120,18 @@ export default class Profile extends Component {
       .catch(error => {
         this.setState({
           loader: false,
-        });
-        Alert.alert('Error', error.message, [{text: 'Okay'}]);
+                  });
+        // Alert.alert('Error', error.message, [{text: 'Okay'}],{cancelable:true});
+        console.log(this.state.userData.length)
+        if(this.state.userData.length > 0 ){
+          console.log('null');
+        }else{
+          this.setState({
+            message: 'Something went wrong. Please try again.',
+            showpage: false,
+            loader:false
+          });
+        }
       });
 
 
@@ -458,13 +468,17 @@ export default class Profile extends Component {
               ) : (
                 <View
                   style={{
-                    flex: 1,
+                    // flex: 2,
                     justifyContent: 'center',
                     alignItems: 'center',
                   }}>
+                    <Image source={require('./image/reading.png')} style={{padding:5,height:250,width:300,marginTop:10}} />
                   <Text
                     style={{
                       fontSize: 16,
+                      color:"red",
+                      marginTop:20,
+                      textAlign:'center'
                     }}>
                     {this.state.message}
                   </Text>

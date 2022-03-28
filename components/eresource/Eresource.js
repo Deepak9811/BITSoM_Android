@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   Text,
   StyleSheet,
@@ -17,17 +17,17 @@ import {
 const win = Dimensions.get('window');
 import RenderHtml from 'react-native-render-html';
 
-import { Appbar } from 'react-native-paper';
+import {Appbar} from 'react-native-paper';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import LinearGradient from 'react-native-linear-gradient';
 // import * as Animatable from 'react-native-animatable';
 
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
 import RNFetchBlob from 'rn-fetch-blob';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { API_ALL } from "@env"
+import {API_ALL} from '@env';
 import IconAntDesign from 'react-native-vector-icons/MaterialIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
 
@@ -64,50 +64,44 @@ export default class Home extends Component {
       console.log('There has problem in AsyncStorage : ' + error.message);
     }
 
-
     console.log('component');
-    this.getApiResponse()
-
-
-
-
+    this.getApiResponse();
   }
 
-
   getApiResponse() {
-    fetch(
-      `${API_ALL}`, {
+    fetch(`${API_ALL}`, {
       method: 'GET',
       headers: {
         Accepts: 'application/json',
         'content-type': 'application/json',
       },
-    },
-    ).then(result => {
-      result.json().then(resp => {
-        // console.log('get Api  Response : ', resp.data[0].Endpoint);
-        if (resp.status === "success") {
-          const api = resp.data[0].Endpoint
-          this.setState({
-            searchBk: resp.data[2].Endpoint,
-            docmt: resp.data[1].Endpoint
-          })
-          this.getPublicerList(api)
-        } else {
-          Alert.alert("Error", resp.message, [{ text: "Okay" }], { cancelable: true })
-        }
-
-      });
     })
+      .then(result => {
+        result.json().then(resp => {
+          // console.log('get Api  Response : ', resp.data[0].Endpoint);
+          if (resp.status === 'success') {
+            const api = resp.data[0].Endpoint;
+            this.setState({
+              searchBk: resp.data[2].Endpoint,
+              docmt: resp.data[1].Endpoint,
+            });
+            this.getPublicerList(api);
+          } else {
+            Alert.alert('Error', resp.message, [{text: 'Okay'}], {
+              cancelable: true,
+            });
+          }
+        });
+      })
       .catch(error => {
         this.setState({
           loader: false,
         });
-        Alert.alert('Error', error.message, [{ text: 'Okay' }], { cancelable: true });
+        Alert.alert('Error', error.message, [{text: 'Okay'}], {
+          cancelable: true,
+        });
       });
-
   }
-
 
   getPublicerList(api) {
     RNFetchBlob.config({
@@ -132,15 +126,17 @@ export default class Home extends Component {
       .catch((error, statusCode) => {
         console.log('statusCode :', statusCode);
         // alert("Something went wrong. Please try again.")
-        Alert.alert('Error', error.message, [{ text: 'Okay' }], { cancelable: true });
+        Alert.alert('Error', error.message, [{text: 'Okay'}], {
+          cancelable: true,
+        });
 
         this.setState({
           loader: false,
-        })
+        });
 
         console.log(
           'There has been a problem with your fetch operation: ' +
-          error.message,
+            error.message,
         );
       });
   }
@@ -162,10 +158,18 @@ export default class Home extends Component {
   async nextPageDetails(searchquer) {
     try {
       await AsyncStorage.setItem('searchquery', JSON.stringify(searchquer));
-      await AsyncStorage.setItem('labelLocal', JSON.stringify(this.state.label));
-      await AsyncStorage.setItem('documentList', JSON.stringify(this.state.docmt));
+      await AsyncStorage.setItem(
+        'labelLocal',
+        JSON.stringify(this.state.label),
+      );
+      await AsyncStorage.setItem(
+        'documentList',
+        JSON.stringify(this.state.docmt),
+      );
 
-      const documentList = JSON.parse(await AsyncStorage.getItem('documentList'));
+      const documentList = JSON.parse(
+        await AsyncStorage.getItem('documentList'),
+      );
       const labelLocal = JSON.parse(await AsyncStorage.getItem('labelLocal'));
 
       this.props.navigation.navigate('PublicerDetails');
@@ -176,22 +180,22 @@ export default class Home extends Component {
     }
   }
 
-
   checkbooks() {
-    if (this.state.searchBook === "") {
-      Alert.alert("Wrong Action", "Please Select Search Criteria.", [
-        { text: 'Okay' }
-      ], { cancelable: true })
+    if (this.state.searchBook === '') {
+      Alert.alert(
+        'Wrong Action',
+        'Please Select Search Criteria.',
+        [{text: 'Okay'}],
+        {cancelable: true},
+      );
     } else {
       // console.log("bookType data :---", this.state.bookType)
       this.setState({
-        loaderSearch: true
-      })
-      this.searchBooks()
+        loaderSearch: true,
+      });
+      this.searchBooks();
     }
   }
-
-
 
   async searchBooks(value) {
     this.setState({
@@ -199,7 +203,7 @@ export default class Home extends Component {
     });
 
     if (this.state.searchBook.length > 0) {
-      this.setState({ listArray: [], showSearchContent: false });
+      this.setState({listArray: [], showSearchContent: false});
 
       this.setState({
         searchLoader: true,
@@ -208,7 +212,9 @@ export default class Home extends Component {
       // let sParameter = value;
       // sParameter = encodeURIComponent(sParameter.trim());
 
-      const searchqueryLocal = JSON.parse(await AsyncStorage.getItem('searchquery'));
+      const searchqueryLocal = JSON.parse(
+        await AsyncStorage.getItem('searchquery'),
+      );
       const email = JSON.parse(await AsyncStorage.getItem('email'));
       const userId = JSON.parse(await AsyncStorage.getItem('userId'));
       const sName = JSON.parse(await AsyncStorage.getItem('sName'));
@@ -220,12 +226,12 @@ export default class Home extends Component {
         'Content-Type': 'application/json',
       };
       const body = JSON.stringify({
-        searchQuery: this.state.searchBook,
-        searchField: "title",
-        startPage: 0,
-        userEmail: email,
-        searchType: "fieldSearch"
-      }),
+          searchQuery: this.state.searchBook,
+          searchField: 'title',
+          startPage: 0,
+          userEmail: email,
+          searchType: 'fieldSearch',
+        }),
         path = `${this.state.searchBk}`;
 
       RNFetchBlob.config({
@@ -237,8 +243,6 @@ export default class Home extends Component {
           const detail = resp.data;
           const prs = JSON.parse(detail);
 
-
-
           if (prs.refreadDocumentList.length != 0) {
             // console.log("prs :- ", prs)
             this.setState({
@@ -246,49 +250,50 @@ export default class Home extends Component {
               showSearchContent: true,
               showData: false,
               loaderSearch: false,
-              showSearchBtn: false
-            })
+              showSearchBtn: false,
+            });
           } else {
             this.setState({
               showError: true,
-              message: 'Sorry, We could not find any results for your search criteria. Please try again.',
-            })
+              message:
+                'Sorry, We could not find any results for your search criteria. Please try again.',
+            });
           }
-
         })
         .catch((error, statusCode) => {
           // console.log('statusCode :', statusCode);
           console.log(
             'There has been a problem with your fetch operation: ' +
-            error.message,
+              error.message,
           );
-          Alert.alert('Error', error.message, [{ text: 'Okay' }], { cancelable: true });
+          Alert.alert('Error', "Something went wrong. Please try again.", [{text: 'Okay'}], {
+            cancelable: true,
+          });
 
           this.setState({
             loaderSearch: false,
-          })
-
+          });
         });
     } else {
       this.setState({
         showSearchContent: false,
       });
-      Alert.alert("", "Please enter search text.", [{ text: "Okay" }], { cancelable: true });
+      Alert.alert('', 'Please enter search text.', [{text: 'Okay'}], {
+        cancelable: true,
+      });
     }
   }
 
-
   cancellSearch() {
     this.setState({
-      searchBook: "",
+      searchBook: '',
       listArray: [],
       showSearchContent: false,
       showData: true,
       loaderSearch: false,
       showSearchBtn: true,
-    })
+    });
   }
-
 
   async getTextValue(item) {
     console.log('get item : ', item.fulltexturl, item.publisher);
@@ -306,10 +311,12 @@ export default class Home extends Component {
     //   console.log('no data');
     // }
 
-
     if (item.fulltexturl.length !== 0) {
       await AsyncStorage.setItem('Booktitle', JSON.stringify(item.title));
-      await AsyncStorage.setItem('fulltexturl', JSON.stringify(item.fulltexturl));
+      await AsyncStorage.setItem(
+        'fulltexturl',
+        JSON.stringify(item.fulltexturl),
+      );
 
       const Booktitle = JSON.parse(await AsyncStorage.getItem('Booktitle'));
       const fullurl = JSON.parse(await AsyncStorage.getItem('fulltexturl'));
@@ -328,23 +335,15 @@ export default class Home extends Component {
         alert('Something wents wrong.');
       }
     }
-
-
-
-
-
-
-
   }
-
 
   render() {
     return (
-      <View style={{ backgroundColor: '#ffffff', flex: 1 }}>
+      <View style={{backgroundColor: '#ffffff', flex: 1}}>
         <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />
         <Appbar.Header style={styles.ttl}>
           <TouchableOpacity
-            style={{ paddingLeft: '2%' }}
+            style={{paddingLeft: '2%'}}
             onPress={() => this.props.navigation.goBack()}>
             <AntDesign name="arrowleft" color="#05375a" size={25} />
           </TouchableOpacity>
@@ -376,7 +375,6 @@ export default class Home extends Component {
           </>
         ) : null}
 
-
         <View style={styles.container}>
           <ScrollView showsVerticalScrollIndicator={false}>
             <>
@@ -385,22 +383,37 @@ export default class Home extends Component {
                 <Text style={styles.library}>BITSoM DIGITAL LIBRARY</Text>
               </View> */}
 
-
               {/* ===============INFO======================= */}
               <View style={styles.uDetail}>
                 <Text style={styles.uNme}>Hello</Text>
                 <Text style={styles.uNme}>{this.state.name}</Text>
-                <Text style={{ marginTop: 10, color: '#8A8A8A' }}>
-                  Welcome to Learning Resource Center, BITSoM, Mumbai
+                <Text style={{marginTop: 10, color: '#8A8A8A'}}>
+                  Welcome to Learning Resource Center, BITSoM
                 </Text>
               </View>
 
-              <Text style={{ marginTop: 10, color: '#8A8A8A', marginBottom: "7%" }}>
-                You can search digital library through free text search or browse different publisher.
+              <Text
+                style={{marginTop: 10, color: '#8A8A8A', marginBottom: '7%'}}>
+                You can search digital library through free text search or
+                browse different publisher.
               </Text>
 
-              <View style={{ borderWidth: 1, borderRadius: 5, borderColor: "#DEDEDE" }}>
-                <Text style={{ position: "absolute", top: -10, left: 5, backgroundColor: "#fff", paddingHorizontal: 5 }}>Free text search</Text>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderRadius: 5,
+                  borderColor: '#DEDEDE',
+                }}>
+                <Text
+                  style={{
+                    position: 'absolute',
+                    top: -10,
+                    left: 5,
+                    backgroundColor: '#fff',
+                    paddingHorizontal: 5,
+                  }}>
+                  Free text search
+                </Text>
 
                 <View style={styles.searchSt}>
                   <TextInput
@@ -408,7 +421,7 @@ export default class Home extends Component {
                     style={styles.searchInputStyle}
                     value={this.state.searchBook}
                     onChangeText={value => {
-                      this.setState({ searchBook: value });
+                      this.setState({searchBook: value});
                     }}
                   />
 
@@ -441,7 +454,7 @@ export default class Home extends Component {
                           name="search"
                           size={30}
                           color="#696969"
-                          style={{ marginLeft: '5%' }}
+                          style={{marginLeft: '5%'}}
                         />
                       </TouchableOpacity>
                     </>
@@ -461,44 +474,35 @@ export default class Home extends Component {
                           name="cross"
                           size={30}
                           color="#696969"
-                          style={{ marginLeft: '5%' }}
+                          style={{marginLeft: '5%'}}
                         />
                       </TouchableOpacity>
                     </>
                   )}
-
-
-
                 </View>
-
               </View>
 
-
-
-
               <View>
-
-
-
-
-
                 {this.state.showSearchContent ? (
                   <LinearGradient
                     colors={['#fff', '#fff']}
-                    style={[styles.dropdown, { marginBottom: "30%", }]}>
-                    <Text style={styles.dropdown, { color: '#8A8A8A', marginBottom: 15 }}>
-                      Following is the list of titles we found based on your search criteria. You can click on individual title for a detailed view.
+                    style={[styles.dropdown, {marginBottom: '30%'}]}>
+                    <Text
+                      style={
+                        (styles.dropdown, {color: '#8A8A8A', marginBottom: 15})
+                      }>
+                      Following is the list of titles we found based on your
+                      search criteria. You can click on individual title for a
+                      detailed view.
                     </Text>
-
-
 
                     <View
                       style={{
                         paddingTop: '5%',
                         width: '100%',
-                        backgroundColor: "#eff7ee",
-                        paddingLeft: "3%",
-                        paddingRight: "3%",
+                        backgroundColor: '#eff7ee',
+                        paddingLeft: '3%',
+                        paddingRight: '3%',
                       }}>
                       <View style={styles.flatstyles}>
                         <View
@@ -508,27 +512,28 @@ export default class Home extends Component {
                             width: '100%',
                           }}>
                           {this.state.listArray.map((item, i) => {
-                            { console.log(item.title) }
+                            {
+                              console.log(item.title);
+                            }
                             if (item.author != null) {
                               // console.log("item.author.length 2 :- ", item.author[0])
                               // if (item.author.length > 0) {
                               //   console.log("item.author.length 2 :- ", item.author[0])
-                              this.state.showitem = true
+                              this.state.showitem = true;
                               // }else{
                               //   this.state.showitem = false
                               // }
                             } else {
-                              this.state.showitem = false
+                              this.state.showitem = false;
                               // console.log("cheking size")
-
                             }
 
-                            if (item.access_type[0] === "Subscribed") {
+                            if (item.access_type[0] === 'Subscribed') {
                               // console.log("Subscribed")
-                              this.state.lock = true
+                              this.state.lock = true;
                             } else {
                               // console.log("Open Access")
-                              this.state.lock = false
+                              this.state.lock = false;
                             }
                             return (
                               <React.Fragment key={i}>
@@ -546,25 +551,33 @@ export default class Home extends Component {
                                         paddingTop: 10,
                                         paddingBottom: 10,
                                         borderRadius: 10,
-                                      }
-                                      }>
+                                      }}>
                                       <View
                                         style={{
                                           paddingLeft: 15,
                                           paddingRight: 5,
-                                          flexDirection: "row",
-                                          justifyContent: "space-between"
+                                          flexDirection: 'row',
+                                          justifyContent: 'space-between',
                                         }}>
                                         <Text style={styles.bookTitle}>
-                                          {item.title.replace("<span>", ' ')}
+                                          {item.title.replace('<span>', ' ')}
                                         </Text>
 
                                         {this.state.lock ? (
-                                          <Feather name='lock' size={20} color="#FF3A00" style={{ marginRight: 5 }} />
+                                          <Feather
+                                            name="lock"
+                                            size={20}
+                                            color="#FF3A00"
+                                            style={{marginRight: 5}}
+                                          />
                                         ) : (
-                                          <Feather name='unlock' size={20} color="#DEDEDE" style={{ marginRight: 5 }} />
+                                          <Feather
+                                            name="unlock"
+                                            size={20}
+                                            color="#DEDEDE"
+                                            style={{marginRight: 5}}
+                                          />
                                         )}
-
 
                                         {/* <RenderHtml
                                           contentWidth={{ width: win.width / 1, height: win.width / 1, }}
@@ -579,21 +592,28 @@ export default class Home extends Component {
                                       <View
                                         style={[
                                           styles.oldBookStyle,
-                                          { marginTop: 10, display: this.state.showitem ? "flex" : "none" },
+                                          {
+                                            marginTop: 10,
+                                            display: this.state.showitem
+                                              ? 'flex'
+                                              : 'none',
+                                          },
                                         ]}>
-
                                         <Text
                                           style={
                                             styles.currentIssuesDetailsMap
                                           }>
                                           By :{' '}
-                                          <Text style={{ display: this.state.showitem ? "flex" : "none" }}>
+                                          <Text
+                                            style={{
+                                              display: this.state.showitem
+                                                ? 'flex'
+                                                : 'none',
+                                            }}>
                                             {item.author}
                                           </Text>
                                         </Text>
                                       </View>
-
-
 
                                       <View style={styles.oldBookStyle}>
                                         <Text
@@ -627,28 +647,37 @@ export default class Home extends Component {
                         justifyContent: 'center',
                         alignItems: 'center',
                         marginTop: '10%',
-                        display: this.state.showError ? "flex" : "none"
+                        display: this.state.showError ? 'flex' : 'none',
                       }}>
                       <Text>{this.state.message}</Text>
                     </View>
                   </>
                 )}
-
               </View>
-
-
-
 
               {/* ------------------------------------------------------------------------------------------------------- */}
 
-
-
               {this.state.showData ? (
-                <View style={{ marginBottom: '35%', borderWidth: 1, marginTop: "10%", paddingHorizontal: 10, borderRadius: 5, borderColor: "#DEDEDE", paddingBottom: "5%" }}>
-
-                  <Text style={{ position: "absolute", top: -10, left: 5, backgroundColor: "#fff", paddingHorizontal: 5 }}>Browser by publisher</Text>
-
-
+                <View
+                  style={{
+                    marginBottom: '35%',
+                    borderWidth: 1,
+                    marginTop: '10%',
+                    paddingHorizontal: 10,
+                    borderRadius: 5,
+                    borderColor: '#DEDEDE',
+                    paddingBottom: '5%',
+                  }}>
+                  <Text
+                    style={{
+                      position: 'absolute',
+                      top: -10,
+                      left: 5,
+                      backgroundColor: '#fff',
+                      paddingHorizontal: 5,
+                    }}>
+                    Browser by publisher
+                  </Text>
 
                   {this.state.publisherData.map((item, i) => {
                     // {
@@ -662,10 +691,10 @@ export default class Home extends Component {
                           <LinearGradient
                             colors={['#f7f6ff', '#eff3fe']}
                             style={styles.commonGradient}>
-                            <View style={{ flexDirection: 'row' }}>
+                            <View style={{flexDirection: 'row'}}>
                               <View style={styles.iconC}>
                                 <Image
-                                  style={{ width: 25, height: 25 }}
+                                  style={{width: 25, height: 25}}
                                   source={{
                                     uri: `${item.url}`,
                                   }}
@@ -676,7 +705,7 @@ export default class Home extends Component {
                                 <Text
                                   style={[
                                     styles.textCommon,
-                                    { color: '#191919', marginTop: '5%' },
+                                    {color: '#191919', marginTop: '5%'},
                                   ]}>
                                   {item.label}
                                 </Text>
@@ -698,9 +727,7 @@ export default class Home extends Component {
                   })}
                 </View>
               ) : null}
-
             </>
-
           </ScrollView>
         </View>
 
@@ -708,10 +735,10 @@ export default class Home extends Component {
           style={{
             paddingBottom: 8,
             paddingTop: 5,
-            position: "absolute",
+            position: 'absolute',
             bottom: 0,
-            backgroundColor: "#fff",
-            width: "100%"
+            backgroundColor: '#fff',
+            width: '100%',
           }}>
           <TouchableOpacity
             style={{
@@ -720,7 +747,7 @@ export default class Home extends Component {
               alignItems: 'center',
             }}>
             <Text>In Association with </Text>
-            <Text style={{ color: '#f68823' }}> Refread</Text>
+            <Text style={{color: '#f68823'}}> Refread</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -760,7 +787,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 4,
     flex: 1,
-
   },
   rightM: {
     textAlign: 'right',
@@ -819,7 +845,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: '#005580',
     fontWeight: '700',
-    marginBottom: 6
+    marginBottom: 6,
   },
   bookAuther: {
     width: '60%',

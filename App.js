@@ -27,16 +27,32 @@ import Posts from './components/pagination/Post';
 import AboutNext from './components/aboutNext/About'
 import EventDetails from './components/EventDetails';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 console.disableYellowBox = true;
 
 export default class App extends Component {
-  componentDidMount() {
+  constructor(props) {
+    super(props);
 
-    setTimeout(() => {
-      
-      SplashScreen.hide();
-    }, 1000);
-  
+    this.state = {
+      routeName: 'LogInNew',
+    };
+  }
+
+  async componentDidMount() {
+    const email = JSON.parse(await AsyncStorage.getItem('email'));
+    console.log('email : ', email);
+    if (email !== null) {
+      this.setState({
+        routeName: 'Drawer',
+      });
+    }
+
+    // setTimeout(() => {
+
+    SplashScreen.hide();
+    // }, 1000);
   }
 
   render() {
@@ -44,9 +60,11 @@ export default class App extends Component {
       <SafeAreaProvider>
         <NavigationContainer>
           <Stack.Navigator
+          initialRouteName={this.state.routeName}
             screenOptions={{
               headerShown: false,
             }}>
+              {/* <Stack.Screen name="Slider" component={slider} /> */}
             <Stack.Screen name="LogInNew" component={LogInNew} />
             <Stack.Screen name="PageFirst" component={PageFirst} />
             <Stack.Screen name="Login" component={Login} />
@@ -64,7 +82,7 @@ export default class App extends Component {
             <Stack.Screen name="Contact" component={Contact} />
             <Stack.Screen name="Profile" component={Profile} />
             <Stack.Screen name="Accountss" component={Account} />
-            <Stack.Screen name="Slider" component={slider} />
+            
             <Stack.Screen name="Pagination" component={Pagination} />
             <Stack.Screen name="Post" component={Posts} />
           </Stack.Navigator>

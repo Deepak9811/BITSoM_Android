@@ -14,6 +14,7 @@ import {
   ActivityIndicator,
   ImageBackground,
   TextInput,
+  ToastAndroid
 } from 'react-native';
 
 import {Appbar} from 'react-native-paper';
@@ -33,6 +34,8 @@ const {width: viewportWidth, height: viewportHeight} = Dimensions.get('window');
 import RadioGroup from 'react-native-radio-buttons-group';
 import StarRating from 'react-native-star-rating';
 import RNExitApp from 'react-native-exit-app';
+
+import Entypo from 'react-native-vector-icons/Entypo';
 
 export default class Home extends Component {
   constructor(props) {
@@ -63,6 +66,8 @@ export default class Home extends Component {
       description: '',
       showResponse: true,
       hideFeedBack: true,
+      showSideMenu: false,
+      upNdDownI: false,
     };
   }
   async componentDidMount() {
@@ -167,7 +172,7 @@ export default class Home extends Component {
             // })
 
             this.setState({
-              fdtitle:resp.data[0].heading,
+              fdtitle: resp.data[0].heading,
               // data: FormatData,
               feedData: resp.data,
               // mcqData: nwdatamcq,
@@ -343,6 +348,11 @@ export default class Home extends Component {
                 });
               }, 3000);
             } else {
+              ToastAndroid.show(
+                'Something went wrong. Please try again.',
+                ToastAndroid.LONG,
+                ToastAndroid.CENTER,
+              );
               // this.setState({
               //   showEvents: false,
               // })
@@ -597,9 +607,9 @@ export default class Home extends Component {
               <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={{marginBottom: '10%'}}>
                   <View style={styles.uDetail}>
-                    <View style={{flexDirection: 'row'}}>
+                    <View style={{flexDirection: 'row',justifyContent:"space-between"}}>
                       <Text
-                        style={[styles.uNme, {width: '70%', color: '#fff'}]}>
+                        style={[styles.uNme, { color: '#fff',width:"80%"}]}>
                         Hello
                       </Text>
 
@@ -624,23 +634,40 @@ export default class Home extends Component {
                             name="logout"
                             color="red"
                             size={15}
-                            style={{marginLeft: 5, marginTop: 3}}
+                            style={{marginLeft: 5, marginTop: 3,marginRight:10}}
                           />
+
+                          {/* <TouchableOpacity
+                            style={styles.showM}
+                            onPress={() =>
+                              this.setState({
+                                showSideMenu: true,
+                              })
+                            }>
+                            <Feather name="menu" size={40} />
+                          </TouchableOpacity> */}
                         </View>
+                        {/* <TouchableOpacity
+                            style={styles.showM}
+                            onPress ={ ( ) => this.props.navigation.openDrawer()}>
+                            <Feather name="menu" size={40} color="#fff"/>
+                          </TouchableOpacity> */}
+
                       </TouchableOpacity>
                     </View>
                     <Text style={styles.uNme}>{this.state.name}</Text>
                     <Text style={{marginTop: 10, color: '#FAFAFA'}}>
-                      Welcome to Learning Resource Center, BITSoM, Mumbai{' '}
+                      Welcome to Learning Resource Center, BITSoM
+                      {/*  */}
                     </Text>
                   </View>
 
+
                   {/* ---------PROFILE */}
                   <View style={{flexDirection: 'row'}}>
-                    <View
-                      style={ {width: '31%', marginTop: 10}}>
+                    <View style={{width: '31%', marginTop: 10}}>
                       <TouchableOpacity
-                      style={styles.bxShoadow}
+                        style={styles.bxShoadow}
                         onPress={() => this.props.navigation.push('Profile')}>
                         <LinearGradient
                           colors={['#F3F3F3', '#F3F3F3']}
@@ -707,11 +734,12 @@ export default class Home extends Component {
                     </View>
 
                     {/* -----------------ABOUT--------------------------- */}
-                    <View
-                      style={{width: '31%', marginLeft: 10, marginTop: 10}}>
+                    <View style={{width: '31%', marginLeft: 10, marginTop: 10}}>
                       <TouchableOpacity
-                      style={styles.bxShoadow}
-                        onPress={() => this.props.navigation.push('About')}>
+                        style={styles.bxShoadow}
+                        // onPress={()=>this.props.navigation.openDrawer()}
+                        onPress={() => this.props.navigation.push('About')}
+                        >
                         <LinearGradient
                           colors={['#F3F3F3', '#F3F3F3']}
                           style={styles.commonGradient}>
@@ -754,10 +782,9 @@ export default class Home extends Component {
                   {/* -----------------CHECKOUT------------------------------ */}
 
                   <View style={{flexDirection: 'row', marginTop: 10}}>
-                    <View
-                      style={ {width: '31%', marginTop: 10}}>
+                    <View style={{width: '31%', marginTop: 10}}>
                       <TouchableOpacity
-                      style={styles.bxShoadow}
+                        style={styles.bxShoadow}
                         onPress={() => this.props.navigation.push('Opac')}>
                         <LinearGradient
                           colors={['#F3F3F3', '#F3F3F3']}
@@ -833,10 +860,9 @@ export default class Home extends Component {
                     </View>
 
                     {/* -----------------Search Book (OPAC)--------------------------- */}
-                    <View
-                      style={{width: '31%', marginLeft: 10, marginTop: 10}}>
+                    <View style={{width: '31%', marginLeft: 10, marginTop: 10}}>
                       <TouchableOpacity
-                      style={styles.bxShoadow}
+                        style={styles.bxShoadow}
                         onPress={() => this.props.navigation.push('Contact')}>
                         <LinearGradient
                           colors={['#F3F3F3', '#F3F3F3']}
@@ -859,13 +885,14 @@ export default class Home extends Component {
                               style={{
                                 justifyContent: 'center',
                                 alignItems: 'center',
-                                paddingTop: 14,
-                                paddingBottom: 10,
+                                paddingTop: 16,
+                                paddingBottom: 15,
+                                marginBottom:10
                               }}>
-                              <Text style={{color: '#717171'}}>Contact </Text>
-                              <Text style={{color: '#717171'}}>
+                              <Text style={{color: '#717171'}}>Contact US</Text>
+                              {/* <Text style={{color: '#717171'}}>
                                 The Library
-                              </Text>
+                              </Text> */}
                             </View>
                           </View>
                         </LinearGradient>
@@ -886,7 +913,7 @@ export default class Home extends Component {
                           }}></View>
 
                         <View>
-                          <Text>Latest books in your library.</Text>
+                          <Text>New Arrivals</Text>
                         </View>
 
                         <View style={{marginTop: '8%', marginBottom: '3%'}}>
@@ -900,12 +927,13 @@ export default class Home extends Component {
                             renderItem={this._renderItem}
                             sliderWidth={viewportWidth}
                             itemWidth={150}
+                            loop={true}
                           />
                         </View>
                       </>
                     ) : (
                       <View style={styles.activityIndicatorStyle}>
-                        <ActivityIndicator color="#57A3FF" size="large" />
+                        {/* <ActivityIndicator color="#57A3FF" size="large" /> */}
                       </View>
                     )}
 
@@ -1007,12 +1035,16 @@ export default class Home extends Component {
                               <Text>Feedback.</Text>
                             </View> */}
 
-                            <View style={[styles.secondContainer,{alignItems:"flex-start"}]}>
+                            <View
+                              style={[
+                                styles.secondContainer,
+                                {alignItems: 'flex-start'},
+                              ]}>
                               <>
                                 {this.state.showResponse ? (
                                   <View
                                     style={{
-                                      width:"100%"
+                                      width: '100%',
                                       // flexDirection: 'row',
                                       // justifyContent: 'space-between',
                                     }}>
@@ -1094,7 +1126,7 @@ export default class Home extends Component {
                               {this.state.showFeedBack ? (
                                 <View
                                   style={{
-                                    width:"100%",
+                                    width: '100%',
                                     marginTop: '5%',
                                     marginBottom: '5%',
                                     padding: 5,
@@ -1154,14 +1186,19 @@ export default class Home extends Component {
                                             style={{
                                               paddingRight: '5%',
                                               textAlign: 'left',
-                                              marginTop:"5%"
+                                              marginTop: '5%',
                                             }}>
-                                    
                                             {item.question}
                                           </Text>
                                         </View>
 
-                                        <View style={{flexDirection: 'row',borderBottomWidth:1,paddingBottom:"5%",borderBottomColor:"#E2E2E2"}}>
+                                        <View
+                                          style={{
+                                            flexDirection: 'row',
+                                            borderBottomWidth: 1,
+                                            paddingBottom: '5%',
+                                            borderBottomColor: '#E2E2E2',
+                                          }}>
                                           {this.state.showMcq ? (
                                             <View
                                               style={{
@@ -1222,12 +1259,22 @@ export default class Home extends Component {
                                                   }
                                                   return (
                                                     <React.Fragment key={i}>
-                                                      <View style={{flexDirection: 'row',}}>
+                                                      <View
+                                                        style={{
+                                                          flexDirection: 'row',
+                                                        }}>
                                                         {!this.state
                                                           .showOption ? (
                                                           <>
-                                                            <View style={{marginRight:'2%',marginLeft:'2%',marginBottom:
-                                                                  '5%',     }}>
+                                                            <View
+                                                              style={{
+                                                                marginRight:
+                                                                  '2%',
+                                                                marginLeft:
+                                                                  '2%',
+                                                                marginBottom:
+                                                                  15,
+                                                              }}>
                                                               <Text
                                                                 style={[
                                                                   styles.title,
@@ -1514,14 +1561,68 @@ const styles = StyleSheet.create({
 
   fdTitle: {
     // justifyContent: 'center',
-    width:"100%",
+    width: '100%',
     marginTop: '5%',
     borderBottomWidth: 1,
     paddingBottom: '3%',
     borderColor: '#E2E2E2',
   },
-  txtfd: {textTransform: 'capitalize', fontSize: 18,width:"100%"},
-  title:{
-    marginBottom:13
-  }
+  txtfd: {
+    textTransform: 'capitalize',
+    fontSize: 18,
+    width: '100%',
+  },
+
+  pop: {
+    flex: 1,
+    width: '100%',
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    elevation: 100,
+    backgroundColor: 'rgba(0,0,0,0.8)',
+  },
+
+  showM: {
+    // marginLeft: 10,
+    // marginTop: 10,
+    // width: '40%',
+  },
+
+  popMenu: {
+    flex: 1,
+    position: 'absolute',
+    left: -10,
+    right: 0,
+    top: 0,
+    // bottom: 0,
+    backgroundColor: '#fff',
+    elevation: 10000,
+    width: '70%',
+    height: '100%',
+  },
+
+  menu: {
+    flexDirection: 'row',
+    // backgroundColor: '#AD40AF',
+    borderRadius: 5,
+    padding: 10,
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+
+  menuD: {
+    marginTop: '1%',
+    marginLeft: '5%',
+    fontSize: 16,
+    // color: '#fff',
+    fontWeight: 'bold',
+  },
+
+  menuI: {
+    marginLeft: '3%',
+    // color: '#fff',
+  },
 });

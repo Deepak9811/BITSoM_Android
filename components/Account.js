@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   Text,
   StyleSheet,
@@ -8,19 +8,19 @@ import {
   StatusBar,
   ActivityIndicator,
   Alert,
+  Image,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
-import { Appbar } from 'react-native-paper';
+import {Appbar} from 'react-native-paper';
 import Feather from 'react-native-vector-icons/Feather';
 
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import LinearGradient from 'react-native-linear-gradient';
 // import * as Animatable from 'react-native-animatable';
 
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {API_URL} from "@env"
+import {API_URL} from '@env';
 
 export default class Account extends Component {
   constructor(props) {
@@ -58,8 +58,8 @@ export default class Account extends Component {
         email: email,
       });
       this.userDetails();
-      this.currentIssuedBook();
-      this.oldIssuedBook();
+      // this.currentIssuedBook();
+      // this.oldIssuedBook();
       console.log('email : ', this.state.name);
     } catch (error) {
       console.log('There has problem in AsyncStorage : ' + error.message);
@@ -67,19 +67,18 @@ export default class Account extends Component {
   }
 
   userDetails() {
-    fetch(
-      `${API_URL}LIBCON-PATINFO&parameter=${this.state.email}`,
-      {
-        method: 'GET',
-        headers: {
-          Accepts: 'application/json',
-          'content-type': 'application/json',
-        },
+    fetch(`${API_URL}LIBCON-PATINFO&parameter=${this.state.email}`, {
+      method: 'GET',
+      headers: {
+        Accepts: 'application/json',
+        'content-type': 'application/json',
       },
-    )
+    })
       .then(result => {
         result.json().then(resp => {
-          console.log('userDetails : ', resp.data.response[0].length);
+          console.log('userDetails : ', resp);
+          this.currentIssuedBook();
+          this.oldIssuedBook();
           this.setState({
             userData: resp.data.response[0],
             userName: resp.data.response[0][2] + ' ' + resp.data.response[0][3],
@@ -93,30 +92,29 @@ export default class Account extends Component {
         });
       })
       .catch(error => {
+        console.log(error);
         this.setState({
           loader: false,
+          showpage: false,
+          message: 'Something went wrong. Please try again.',
         });
-        Alert.alert('Error', error, [{ text: 'Okay' }],{cancelable:true});
+        // Alert.alert('Error', error, [{ text: 'Okay' }],{cancelable:true});
       });
-
   }
 
   currentIssuedBook() {
-    console.log("check id:0------------", this.state.id);
-    fetch(
-      `${API_URL}LIBCON-ISSUED&parameter=${this.state.id}`,
-      {
-        method: 'GET',
-        headers: {
-          Accepts: 'application/json',
-          'content-type': 'application/json',
-        },
+    console.log('check id:0------------', this.state.id);
+    fetch(`${API_URL}LIBCON-ISSUED&parameter=${this.state.id}`, {
+      method: 'GET',
+      headers: {
+        Accepts: 'application/json',
+        'content-type': 'application/json',
       },
-    )
+    })
       .then(result => {
         result.json().then(resp => {
           // console.log('resp current book : ', resp);
-          if (resp.status === "success") {
+          if (resp.status === 'success') {
             if (resp.data.response.length > 0) {
               this.setState({
                 currentIssued: resp.data.response,
@@ -134,27 +132,24 @@ export default class Account extends Component {
         this.setState({
           loader: false,
         });
-        Alert.alert('Error', error, [{ text: 'Okay' }],{cancelable:true});
+        Alert.alert('Error', error, [{text: 'Okay'}], {cancelable: true});
       });
   }
 
   oldIssuedBook() {
     console.log(this.state.id);
-    fetch(
-      `${API_URL}LIBCON-OLDISSUED&parameter=${this.state.id}`,
-      {
-        method: 'GET',
-        headers: {
-          Accepts: 'application/json',
-          'content-type': 'application/json',
-        },
+    fetch(`${API_URL}LIBCON-OLDISSUED&parameter=${this.state.id}`, {
+      method: 'GET',
+      headers: {
+        Accepts: 'application/json',
+        'content-type': 'application/json',
       },
-    )
+    })
       .then(result => {
         result.json().then(resp => {
           // console.log('oldIssuedBook : ', resp.data.response);
 
-          if (resp.status === "success") {
+          if (resp.status === 'success') {
             if (resp.data.response.length > 0) {
               this.setState({
                 oldIssued: resp.data.response,
@@ -169,18 +164,20 @@ export default class Account extends Component {
               loader: false,
             });
           }
-
         });
       })
       .catch(error => {
         this.setState({
           loader: false,
         });
-        Alert.alert('Error', error, [{ text: 'Okay' }],{cancelable:true});
+        Alert.alert('Error', error, [{text: 'Okay'}], {cancelable: true});
       });
 
     setTimeout(() => {
-      console.log("this.state.userData.length :----", this.state.userData.length);
+      console.log(
+        'this.state.userData.length :----',
+        this.state.userData.length,
+      );
       if (this.state.userData.length > 0) {
         this.setState({
           showpage: true,
@@ -197,19 +194,19 @@ export default class Account extends Component {
   }
 
   showCBook() {
-    this.setState({ showCurrentBook: true });
+    this.setState({showCurrentBook: true});
   }
 
   HideCBook() {
-    this.setState({ showCurrentBook: false });
+    this.setState({showCurrentBook: false});
   }
 
   showOldBooks() {
-    this.setState({ showOldBook: true });
+    this.setState({showOldBook: true});
   }
 
   HideOldBook() {
-    this.setState({ showOldBook: false });
+    this.setState({showOldBook: false});
   }
 
   render() {
@@ -218,7 +215,7 @@ export default class Account extends Component {
         <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />
         <Appbar.Header style={styles.ttl}>
           <TouchableOpacity
-            style={{ paddingLeft: '2%' }}
+            style={{paddingLeft: '2%'}}
             onPress={() => this.props.navigation.goBack()}>
             <AntDesign name="arrowleft" color="#05375a" size={25} />
           </TouchableOpacity>
@@ -226,19 +223,19 @@ export default class Account extends Component {
         </Appbar.Header>
 
         {!this.state.loader ? (
-          <View style={{ flex: 1 }}>
+          <View style={{flex: 1}}>
             <ScrollView
               showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ flexGrow: 1 }}>
+              contentContainerStyle={{flexGrow: 1}}>
               {this.state.showpage ? (
-                <View style={{ flex: 1 }}>
+                <View style={{flex: 1}}>
                   {/* ===============INFO======================= */}
-                  <View style={{ margin: '5%' }}>
+                  <View style={{margin: '5%'}}>
                     <View style={styles.uDetail}>
                       <Text style={styles.uNme}>Hello</Text>
                       <Text style={styles.uNme}>{this.state.userName}</Text>
-                      <Text style={{ marginTop: 10, color: '#8A8A8A' }}>
-                        Welcome to Learning Resource Center, BITSoM, Mumbai{' '}
+                      <Text style={{marginTop: 10, color: '#8A8A8A'}}>
+                        Welcome to Learning Resource Center, BITSoM
                       </Text>
                     </View>
 
@@ -247,7 +244,7 @@ export default class Account extends Component {
                     <LinearGradient
                       colors={['#fce5e5', '#f5ddde']}
                       style={styles.commonGradient}>
-                      <View style={{ marginBottom: '4%' }}>
+                      <View style={{marginBottom: '4%'}}>
                         <Text style={styles.text_footer}>Membership Id :</Text>
 
                         <View style={styles.editInfo}>
@@ -260,11 +257,10 @@ export default class Account extends Component {
                           </View>
                           <View>
                             <Text
-                              style={[styles.fillDetails, { color: '#e1495e' }]}>
+                              style={[styles.fillDetails, {color: '#e1495e'}]}>
                               {this.state.userMemberShip}
                             </Text>
                           </View>
-                         
                         </View>
                       </View>
                     </LinearGradient>
@@ -273,7 +269,7 @@ export default class Account extends Component {
                     <LinearGradient
                       colors={['#f7f6ff', '#eff3fe']}
                       style={styles.commonGradient}>
-                      <View style={{ marginBottom: '4%' }}>
+                      <View style={{marginBottom: '4%'}}>
                         <Text style={styles.text_footer}>Valid Upto :</Text>
 
                         <View style={styles.editInfo}>
@@ -286,11 +282,10 @@ export default class Account extends Component {
                           </View>
                           <View>
                             <Text
-                              style={[styles.fillDetails, { color: '#191919' }]}>
+                              style={[styles.fillDetails, {color: '#191919'}]}>
                               {this.state.validUpto}
                             </Text>
                           </View>
-                        
                         </View>
                       </View>
                     </LinearGradient>
@@ -306,14 +301,14 @@ export default class Account extends Component {
                           onPress={() => this.showCBook()}
                           style={[
                             styles.editInfo,
-                            { marginTop: '5%', marginBottom: '5%' },
+                            {marginTop: '5%', marginBottom: '5%'},
                           ]}>
                           <View style={styles.iconC}>
                             <AntDesign name="book" color="#3860cc" size={20} />
                           </View>
                           <View>
                             <Text
-                              style={[styles.fillDetails, { color: '#3860cc' }]}>
+                              style={[styles.fillDetails, {color: '#3860cc'}]}>
                               Current Issued Books
                             </Text>
                           </View>
@@ -374,7 +369,7 @@ export default class Account extends Component {
                                         colors={['#fff', '#fff']}
                                         style={[
                                           styles.commonGradient,
-                                          { paddingTop: 10, paddingBottom: 10 },
+                                          {paddingTop: 10, paddingBottom: 10},
                                         ]}>
                                         <View
                                           style={{
@@ -389,7 +384,7 @@ export default class Account extends Component {
                                         <View
                                           style={[
                                             styles.oldBookStyle,
-                                            { marginTop: 10 },
+                                            {marginTop: 10},
                                           ]}>
                                           <Text
                                             style={
@@ -449,8 +444,6 @@ export default class Account extends Component {
                                             </Text>
                                           </Text>
                                         </View>
-
-
                                       </LinearGradient>
                                     </View>
                                   </>
@@ -476,14 +469,14 @@ export default class Account extends Component {
                           }}
                           style={[
                             styles.editInfo,
-                            { marginTop: '5%', marginBottom: '5%' },
+                            {marginTop: '5%', marginBottom: '5%'},
                           ]}>
                           <View style={styles.iconC}>
                             <AntDesign name="book" color="#77aa69" size={20} />
                           </View>
                           <View>
                             <Text
-                              style={[styles.fillDetails, { color: '#77aa69' }]}>
+                              style={[styles.fillDetails, {color: '#77aa69'}]}>
                               Previously Issued Books
                             </Text>
                           </View>
@@ -546,7 +539,7 @@ export default class Account extends Component {
                                         colors={['#fff', '#fff']}
                                         style={[
                                           styles.commonGradient,
-                                          { paddingTop: 10, paddingBottom: 10 },
+                                          {paddingTop: 10, paddingBottom: 10},
                                         ]}>
                                         <View
                                           style={{
@@ -561,7 +554,7 @@ export default class Account extends Component {
                                         <View
                                           style={[
                                             styles.oldBookStyle,
-                                            { marginTop: 10 },
+                                            {marginTop: 10},
                                           ]}>
                                           <Text
                                             style={
@@ -632,8 +625,8 @@ export default class Account extends Component {
                     </LinearGradient>
 
                     {/* ============================================== */}
-                    <View style={{ marginTop: '5%' }}>
-                      <Text style={{ color: '#8A8A8A' }}>
+                    <View style={{marginTop: '5%'}}>
+                      <Text style={{color: '#8A8A8A'}}>
                         These details are taken from your existing Account with
                         the Library. In case of any concerns, please contact the
                         helpdesk at the Library.
@@ -644,13 +637,20 @@ export default class Account extends Component {
               ) : (
                 <View
                   style={{
-                    flex: 1,
+                    // flex: 1,
                     justifyContent: 'center',
                     alignItems: 'center',
                   }}>
+                  <Image
+                    source={require('./image/reading.png')}
+                    style={{padding: 5, height: 250, width: 300, marginTop: 10}}
+                  />
                   <Text
                     style={{
                       fontSize: 16,
+                      color: 'red',
+                      marginTop: 20,
+                      textAlign: 'center',
                     }}>
                     {this.state.message}
                   </Text>
@@ -669,7 +669,7 @@ export default class Account extends Component {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff' },
+  container: {flex: 1, backgroundColor: '#ffffff'},
   ttl: {
     backgroundColor: '#ffffff',
   },
@@ -716,7 +716,7 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
     borderRadius: 10,
-   
+
     paddingLeft: 10,
     marginBottom: 10,
   },
