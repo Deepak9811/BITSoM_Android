@@ -176,7 +176,7 @@ export default class Profile extends Component {
                       <Text style={styles.uNme}>{this.state.userName}</Text>
 
                       <Text style={{marginTop: 10, color: '#8A8A8A'}}>
-                        Welcome to Learning Resource Center, BITSoM, Mumbai{' '}
+                        Welcome to Learning Resource Center, BITSoM
                       </Text>
                     </View>
 
@@ -546,6 +546,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingLeft: 10,
     marginBottom: 10,
+
+    // borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.18,
+    shadowRadius: 1.0,
+    elevation: 1,
   },
   iconC: {
     marginTop: 3,

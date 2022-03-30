@@ -10,12 +10,14 @@ import {
   Alert,
   ToastAndroid,
   Linking,
+  BackHandler,
+  StatusBar,
 } from 'react-native';
 
 import {Appbar} from 'react-native-paper';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import LinearGradient from 'react-native-linear-gradient';
-// import * as Animatable from 'react-native-animatable';
+import * as Animatable from 'react-native-animatable';
 import {Picker as SelectPicker} from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -34,12 +36,14 @@ export default class About extends Component {
       purposeData: [
         {type: 'Title', id: '1'},
         {type: 'Author', id: '2'},
-        {type: 'Publisher', id: '3'},
+        {type: 'Keyword', id: '3'},
+        {type: 'ISBN', id: '4'},
       ],
       searchLoader: false,
       showSearchContent: false,
       hidePubliser: true,
       bookType: '',
+      animation: true,
     };
   }
 
@@ -55,6 +59,16 @@ export default class About extends Component {
     } catch (error) {
       console.log('There has problem in AsyncStorage : ' + error.message);
     }
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.setState({
+        animation: false,
+      }),
+      // this.disableBackButton(),
+    );
   }
 
   checkCatalog() {
@@ -104,17 +118,17 @@ export default class About extends Component {
               if (resp.data.response.length > 0) {
                 // console.log('search =>', resp);
                 this.setState({
+                  searchLoader: false,
                   listArray: resp.data.response,
                   showSearchContent: true,
-                  searchLoader: false,
                 });
               }
             } else {
-              ToastAndroid.show(
-                resp.message,
-                ToastAndroid.LONG,
-                ToastAndroid.CENTER,
-              );
+              // ToastAndroid.show(
+              //   resp.message,
+              //   ToastAndroid.LONG,
+              //   ToastAndroid.CENTER,
+              // );
               this.setState({
                 searchLoader: false,
                 message:
@@ -137,28 +151,6 @@ export default class About extends Component {
             searchLoader: false,
           });
         });
-
-      // setTimeout(() => {
-      //   console.log('nothing');
-      //   this.setState({
-      //     searchLoader: false,
-      //     message: 'Sorry, Something wents wrong .',
-      //   });
-      // }, 10000);
-
-      // setTimeout(() => {
-      //   console.log(this.state.listArray.length);
-      //   if (this.state.listArray.length > 0) {
-      //     console.log('null');
-      //   } else {
-      //     console.log('Sorry, the requested page is not available');
-      //     this.setState({
-      //       message: 'Sorry, We could not find any results for your search criteria. Please try again.',
-      //       showpage: false,
-      //       searchLoader: false,
-      //     });
-      //   }
-      // }, 10000);
     } else {
       this.setState({
         showSearchContent: false,
@@ -204,7 +196,11 @@ export default class About extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <Animatable.View
+        style={styles.container}
+        // animation={this.state.animation ? 'fadeInRight' : 'fadeOutRight'}
+        >
+          <StatusBar backgroundColor={"#fff"} barStyle="dark-content"/>
         <Appbar.Header style={styles.ttl}>
           <TouchableOpacity
             style={{paddingLeft: '2%'}}
@@ -221,7 +217,7 @@ export default class About extends Component {
           </View>
         )}
 
-        {this.state.searchLoader && (
+        {/* {this.state.searchLoader && (
           <View
             style={{
               flex: 1,
@@ -233,7 +229,7 @@ export default class About extends Component {
             }}>
             <ActivityIndicator size="large" color="#0d6efd" />
           </View>
-        )}
+        )} */}
 
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={{margin: 10, marginLeft: '5%', marginRight: '5%'}}>
@@ -289,15 +285,11 @@ export default class About extends Component {
                 <LinearGradient
                   colors={['#f68823', '#b03024']}
                   style={styles.signIn}>
-                  <Text
-                    style={[
-                      styles.textSign,
-                      {
-                        color: '#fff',
-                      },
-                    ]}>
-                    Search
-                  </Text>
+                  {this.state.searchLoader ? (
+                    <ActivityIndicator size="large" color="#fff" />
+                  ) : (
+                    <Text style={styles.textSign}>Search</Text>
+                  )}
                 </LinearGradient>
               </TouchableOpacity>
             </View>
@@ -454,7 +446,7 @@ export default class About extends Component {
             <Text style={{color: '#f68823'}}> LIBCON</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </Animatable.View>
     );
   }
 }
@@ -510,6 +502,7 @@ const styles = StyleSheet.create({
   textSign: {
     fontSize: 18,
     fontWeight: '700',
+    color: '#fff',
   },
   pkr: {
     width: '100%',
@@ -558,4 +551,12 @@ const styles = StyleSheet.create({
   uNme: {
     fontSize: 25,
   },
+  commonGradient:{
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.18,
+    shadowRadius: 1.0,
+    elevation: 1,
+  }
 });

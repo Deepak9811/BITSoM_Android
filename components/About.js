@@ -92,32 +92,14 @@ export default class About extends Component {
   }
 
   async getDetailsAbout(item) {
-    console.log(item.id, item.heading, item.imageUrl);
+    console.log(item.id, item.heading, item.imageUrl)
     try {
-      await AsyncStorage.setItem('headingAbout', JSON.stringify(item.heading));
-      await AsyncStorage.setItem(
-        'imageUrlAbout',
-        JSON.stringify(item.imageUrl),
-      );
-      await AsyncStorage.setItem('bodyText', JSON.stringify(item.bodyText));
-      const headingAbout = JSON.parse(
-        await AsyncStorage.getItem('headingAbout'),
-      );
-      const imageUrlAbout = JSON.parse(
-        await AsyncStorage.getItem('imageUrlAbout'),
-      );
-      const bodyText = JSON.parse(await AsyncStorage.getItem('bodyText'));
-      if (headingAbout != null && imageUrlAbout != null && bodyText != null) {
-        console.log(imageUrlAbout);
-        this.props.navigation.navigate('AboutNext');
-      } else {
-        console.log('Something wents wrong.');
-      }
+      await AsyncStorage.setItem("headingAbout", JSON.stringify(item.heading))
+        this.props.navigation.navigate("AboutNext",{itemData:item})
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
   }
-
   render() {
     return (
       <View style={[styles.container,{ backgroundColor: this.state.showError ? '#fff' : '',}]}>
@@ -156,10 +138,8 @@ export default class About extends Component {
                           flexDirection: 'row',
                           justifyContent: 'space-between',
                         }}>
-                        <View>
-                          <Text style={[styles.textCommon, {color: '#e1495e'}]}>
-                            {item.heading}
-                          </Text>
+                        <View style={{width:"80%"}}>
+                          <Text style={[styles.textCommon, {color: '#e1495e'}]}>{item.heading.trim()}</Text>
                         </View>
 
                         <View style={styles.rightIcon}>
@@ -247,17 +227,21 @@ const styles = StyleSheet.create({
   },
   commonGradient: {
     width: '100%',
-    height: 50,
+    paddingVertical: 10,
     justifyContent: 'center',
     borderRadius: 10,
   },
   textCommon: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginLeft: '15%',
+    marginLeft: 20,
+    textAlign:"left",
+    // width:"80%"
   },
   rightIcon: {
     marginTop: 4,
     marginRight: '5%',
+    justifyContent:"center",
+    alignItems:"center"
   },
 });

@@ -716,6 +716,11 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
     borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.18,
+    shadowRadius: 1.0,
+    elevation: 1,
 
     paddingLeft: 10,
     marginBottom: 10,

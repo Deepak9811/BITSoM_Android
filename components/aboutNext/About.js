@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Text, StyleSheet, View, TouchableOpacity, Image, ActivityIndicator, ScrollView, } from 'react-native'
+import { BackHandler, StyleSheet, View, TouchableOpacity, Image, ActivityIndicator, ScrollView, } from 'react-native'
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Appbar } from 'react-native-paper';
@@ -22,32 +22,36 @@ export default class About extends Component {
             header: '',
             image: "",
             bodyText: "",
-            loader: true
+            loader: false
         }
     }
 
     async componentDidMount() {
         try {
+            // let dtaRemove = ["imageUrlAbout"]
+            //     await AsyncStorage.multiRemove(dtaRemove)
             const headingAbout = JSON.parse(await AsyncStorage.getItem("headingAbout"))
-            const imageUrlAbout = JSON.parse(await AsyncStorage.getItem("imageUrlAbout"))
-            const bodyText = JSON.parse(await AsyncStorage.getItem("bodyText"))
-
-            console.log("imageUrlAbout :- ",imageUrlAbout)
-
-
-            const body = bodyText.replace(/<(.|\n)*?>/g, '');
-
-            console.log(body)
+            // const imageUrlAbout = JSON.parse(await AsyncStorage.getItem("imageUrlAbout"))
+            // const bodyText = JSON.parse(await AsyncStorage.getItem("bodyText"))
 
             this.setState({
                 header: headingAbout,
-                image: imageUrlAbout,
+                // image: imageUrlAbout,
                 // bodyText: body,
-                bodyText: bodyText,
+                // bodyText: bodyText,
 
             })
 
-            if (this.state.image !== "") {
+            // // console.log("imageUrlAbout :- ",imageUrlAbout)
+
+
+            // const body = bodyText.replace(/<(.|\n)*?>/g, '');
+
+            // console.log(body)
+
+          
+
+            if (this.props.route.params.itemData.imageUrl !== "") {
                 this.setState({
                     loader: false
                 })
@@ -58,12 +62,21 @@ export default class About extends Component {
                 })
             }
 
-            console.log(this.state.image)
+            console.log(this.props.route.params.itemData.imageUrl)
 
         } catch (error) {
             console.log(error.message)
         }
     }
+
+    // componentWillUnmount(){
+    //     BackHandler.removeEventListener(
+    //         'hardwareBackPress',
+    //         this.setState({
+    //             image:""
+    //         })
+    //       );
+    // }
 
     render() {
         return (
@@ -74,7 +87,7 @@ export default class About extends Component {
                         onPress={() => this.props.navigation.goBack()}>
                         <AntDesign name="arrowleft" color="#05375a" size={25} />
                     </TouchableOpacity>
-                    <Appbar.Content title={this.state.header} />
+                    <Appbar.Content title={this.props.route.params.itemData.heading} />
                 </Appbar.Header>
 
                 {this.state.loader && (
@@ -87,14 +100,14 @@ export default class About extends Component {
                     <View style={styles.body}>
                         {/* <Text style={{ fontSize: 25, fontWeight: "600", marginBottom: "6%", }}>Heading</Text> */}
 
-                        <Image source={{ uri: this.state.image } }  resizeMode="contain" style={{ height: 250, width: 320, marginBottom: "5%",display:this.state.ShowImage ? "none": "flex" }} />
+                        <Image source={{ uri: `${this.props.route.params.itemData.imageUrl}`+ '?' + new Date() }}  resizeMode="contain" style={{ height: 250, width: 320, marginBottom: "5%",display:this.state.ShowImage ? "none": "flex" }} />
                         {/* <Text style={{}}>{this.state.bodyText}</Text> */}
                         {/* <WebView style={{  width: 800, height: "100%" }}
                             source= {{html: `${this.state.bodyText}`}} /> */}
 
                         <RenderHtml
                             contentWidth={{width:100}}
-                            source= {{html: `${this.state.bodyText}`}}
+                            source= {{html: `${this.props.route.params.itemData.bodyText}`}}
                         />
                     </View>
 

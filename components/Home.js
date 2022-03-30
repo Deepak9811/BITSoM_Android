@@ -632,7 +632,7 @@ export default class Home extends Component {
                           </Text>
                           <MaterialIcons
                             name="logout"
-                            color="red"
+                            color="#fff"
                             size={15}
                             style={{marginLeft: 5, marginTop: 3,marginRight:10}}
                           />
@@ -682,7 +682,7 @@ export default class Home extends Component {
                               <Feather name="user" color="#fe8c00" size={28} />
                             </View>
 
-                            <View
+                            {/* <View
                               style={{
                                 justifyContent: 'center',
                                 alignItems: 'center',
@@ -691,6 +691,23 @@ export default class Home extends Component {
                               }}>
                               <Text style={{color: '#717171'}}>
                                 Your Profile
+                              </Text>
+                            </View> */}
+
+                            
+
+                            <View
+                              style={{
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                paddingTop: 10,
+                                paddingBottom: 10,
+                              }}>
+                              <Text style={{color: '#717171'}}>
+                              Your
+                              </Text>
+                              <Text style={{color: '#717171',paddingTop:1}}>
+                              Profile
                               </Text>
                             </View>
                           </View>
@@ -718,15 +735,20 @@ export default class Home extends Component {
                               <Feather name="lock" color="#fe8c00" size={28} />
                             </View>
 
+
                             <View
                               style={{
                                 justifyContent: 'center',
                                 alignItems: 'center',
                                 paddingTop: 10,
-                                paddingBottom: 8,
+                                paddingBottom: 10,
                               }}>
-                              <Text style={{color: '#717171'}}>Your </Text>
-                              <Text style={{color: '#717171'}}> Account</Text>
+                              <Text style={{color: '#717171'}}>
+                              Your
+                              </Text>
+                              <Text style={{color: '#717171'}}>
+                              Account
+                              </Text>
                             </View>
                           </View>
                         </LinearGradient>
@@ -765,11 +787,9 @@ export default class Home extends Component {
                                 paddingBottom: 10,
                               }}>
                               <Text style={{color: '#717171'}}>
-                                {' '}
-                                More About{' '}
+                                More About
                               </Text>
                               <Text style={{color: '#717171'}}>
-                                {' '}
                                 The Library
                               </Text>
                             </View>
@@ -843,17 +863,35 @@ export default class Home extends Component {
                               />
                             </View>
 
-                            <View
+                            {/* <View
                               style={{
                                 justifyContent: 'center',
                                 alignItems: 'center',
-                                paddingTop: 20,
-                                paddingBottom: 22,
+                                paddingTop: 17,
+                                paddingBottom: 25,
                               }}>
                               <Text style={{color: '#717171'}}>
                                 E-Resources{' '}
                               </Text>
+                            </View> */}
+
+                            
+                              <View
+                              style={{
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                marginTop: 15,
+                                marginBottom: 10,
+                              }}>
+                              <Text style={{color: '#717171'}}>
+                              E-Resources
+                              </Text>
+
+                              <Text style={{color: '#717171'}}></Text>
                             </View>
+
+
+                            
                           </View>
                         </LinearGradient>
                       </TouchableOpacity>
@@ -885,15 +923,17 @@ export default class Home extends Component {
                               style={{
                                 justifyContent: 'center',
                                 alignItems: 'center',
-                                paddingTop: 16,
-                                paddingBottom: 15,
-                                marginBottom:10
+                                marginTop: 14,
+                                marginBottom: 11,
                               }}>
-                              <Text style={{color: '#717171'}}>Contact US</Text>
-                              {/* <Text style={{color: '#717171'}}>
-                                The Library
-                              </Text> */}
+                              <Text style={{color: '#717171'}}>
+                              Contact
+                              </Text>
+
+                              <Text style={{color: '#717171'}}>US</Text>
                             </View>
+
+                            
                           </View>
                         </LinearGradient>
                       </TouchableOpacity>
@@ -1016,6 +1056,30 @@ export default class Home extends Component {
                       </View>
                     )}
 
+
+
+                    {/* ------------------Quote----------------------------- */}
+
+                    {this.state.showQuote ? (
+                      <View style={{marginBottom: '20%'}}>
+                        <View
+                          style={{
+                            borderBottomWidth: 1,
+                            borderBottomColor: '#fff',
+                          }}></View>
+
+                        <View style={{marginBottom: '5%', marginTop: '10%'}}>
+                          <Text>News And Notices.</Text>
+                        </View>
+
+                        <View style={styles.secondContainer}>
+                          <Text style={{fontSize: 20}}>{this.state.Quote}</Text>
+                        </View>
+                      </View>
+                    ) : null}
+
+
+
                     {/* --------------------FeedBack------------------------------- */}
                     {/* {this.state.showEvents && ( */}
 
@@ -1048,24 +1112,17 @@ export default class Home extends Component {
                                       // flexDirection: 'row',
                                       // justifyContent: 'space-between',
                                     }}>
-                                    {/* <View style={{justifyContent: 'center'}}>
-                                      <Text
-                                        style={[
-                                          {
-                                            marginLeft: 10,
-                                            alignItems: 'center',
-                                            fontSize: 18,
-                                          },
-                                        ]}>
+                                    <View style={styles.fdTitle}>
+                                      <Text style={styles.txtfd}>
                                         Feedback
                                       </Text>
-                                    </View> */}
+                                    </View>
 
-                                    <View style={styles.fdTitle}>
+                                    {/* <View style={styles.fdTitle}>
                                       <Text style={styles.txtfd}>
                                         {this.state.fdtitle}
                                       </Text>
-                                    </View>
+                                    </View> */}
 
                                     {/* {this.state.showFeedBack ? (
                                       <TouchableOpacity
@@ -1368,7 +1425,7 @@ export default class Home extends Component {
                                   })}
 
                                   <TouchableOpacity
-                                    style={styles.button}
+                                    style={[styles.button,{marginTop:30}]}
                                     onPress={() => this.postFeedBack()}>
                                     <LinearGradient
                                       colors={['#f68823', '#b03024']}
@@ -1394,25 +1451,7 @@ export default class Home extends Component {
 
                     {/* )} */}
 
-                    {/* ------------------Quote----------------------------- */}
-
-                    {this.state.showQuote ? (
-                      <View style={{marginBottom: '20%'}}>
-                        <View
-                          style={{
-                            borderBottomWidth: 1,
-                            borderBottomColor: '#fff',
-                          }}></View>
-
-                        <View style={{marginBottom: '5%', marginTop: '10%'}}>
-                          <Text>Quote of the Day.</Text>
-                        </View>
-
-                        <View style={styles.secondContainer}>
-                          <Text style={{fontSize: 20}}>{this.state.Quote}</Text>
-                        </View>
-                      </View>
-                    ) : null}
+                    
                   </View>
                 </View>
 
@@ -1570,7 +1609,7 @@ const styles = StyleSheet.create({
   txtfd: {
     textTransform: 'capitalize',
     fontSize: 18,
-    width: '100%',
+    width: '90%',
   },
 
   pop: {

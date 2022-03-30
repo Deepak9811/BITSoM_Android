@@ -6,9 +6,6 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import SplashScreen from 'react-native-splash-screen';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 
-import Login from './components/Login';
-import PageFirst from './components/PageFirst';
-import VerifyNum from './components/VerifyNum';
 import Home from './components/Home';
 import Eresource from './components/eresource/Eresource';
 import Opac from './components/Opac';
@@ -20,7 +17,6 @@ import Account from './components/Account';
 import LogInNew from './components/LogInNew';
 import OpenBook from './components/eresource/OpenBook';
 import OpacNext from './components/opac/OpacNext';
-import slider from './components/slider';
 import Pagination from './components/pagination/Pagination';
 import Posts from './components/pagination/Post';
 
@@ -45,14 +41,10 @@ export default class App extends Component {
     console.log('email : ', email);
     if (email !== null) {
       this.setState({
-        routeName: 'Drawer',
+        routeName: 'Home',
       });
     }
-
-    // setTimeout(() => {
-
     SplashScreen.hide();
-    // }, 1000);
   }
 
   render() {
@@ -64,10 +56,7 @@ export default class App extends Component {
             screenOptions={{
               headerShown: false,
             }}>
-              {/* <Stack.Screen name="Slider" component={slider} /> */}
             <Stack.Screen name="LogInNew" component={LogInNew} />
-            <Stack.Screen name="PageFirst" component={PageFirst} />
-            <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="Home" component={Home} />
             <Stack.Screen name="Eresource" component={Eresource} />
             <Stack.Screen name="PublicerDetails" component={PublicerDetails} />

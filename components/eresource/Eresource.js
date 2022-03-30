@@ -551,6 +551,12 @@ export default class Home extends Component {
                                         paddingTop: 10,
                                         paddingBottom: 10,
                                         borderRadius: 10,
+                                        shadowColor: '#000',
+                                        shadowOffset: {width: 0, height: 1},
+                                        shadowOpacity: 0.18,
+                                        shadowRadius: 1.0,
+                                        elevation: 1,
+                                        
                                       }}>
                                       <View
                                         style={{
@@ -773,6 +779,12 @@ const styles = StyleSheet.create({
     height: 50,
     justifyContent: 'center',
     borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.18,
+    shadowRadius: 1.0,
+    elevation: 1,
+    
   },
   textCommon: {
     fontSize: 16,

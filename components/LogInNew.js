@@ -120,7 +120,7 @@ export default class LogInNew extends Component {
     this.setState({ loader: true });
     // console.log(this.state.email, this.state.pass, this.state.purposeValue);
 
-    let emails = this.state.email.trim()
+    let emails = this.state.email
 
     fetch(
       `${API_URL}LIBCON-PATINFO&parameter=${emails}`,
@@ -302,7 +302,7 @@ export default class LogInNew extends Component {
                         onChangeText={val => {
                           this.textInputchange(val);
                           this.setState({
-                            email: val,
+                            email: val.trim(),
                           });
                         }}
                       />

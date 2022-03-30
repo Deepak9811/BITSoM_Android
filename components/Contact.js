@@ -8,6 +8,8 @@ import {
   Linking,
   ScrollView,
   Image,
+  Alert,
+  // TextInput,
 } from 'react-native';
 
 import {Appbar} from 'react-native-paper';
@@ -18,6 +20,9 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {WebView} from 'react-native-webview';
+import email from 'react-native-email';
+import {TextInput, Button} from 'react-native-paper';
+import Mailer from 'react-native-mail';
 
 export default class Contact extends Component {
   constructor(props) {
@@ -25,6 +30,7 @@ export default class Contact extends Component {
     this.state = {
       loader: true,
       name: 'NaN',
+      description: '',
     };
   }
 
@@ -36,11 +42,103 @@ export default class Contact extends Component {
       this.setState({
         name: sName + ' ' + sNameLast,
       });
-      console.log('name : ', this.state.name);
+      // console.log('name : ', this.state.name);
     } catch (error) {
       console.log('There has problem in AsyncStorage : ' + error.message);
     }
   }
+
+  handleEmail = () => {
+    if (this.state.description !== '') {
+      const to = ['Library.helpdesk@bitsom.edu.in']; // string or array of email addresses
+      // const to = ['theartistnw@gmail.com']; // string or array of email addresses
+      email(to, {
+        // Optional additional arguments
+        // cc: ['bazzy@moo.com', 'doooo@daaa.com'], // string or array of email addresses
+        // bcc: 'mee@mee.com', // string or array of email addresses
+        subject: 'BITSoM Application Contact Enquiry',
+        body: this.state.description,
+      })
+        .then(result => {
+          console.log('result :- ', result);
+          if (result === true) {
+            console.log('rsult true');
+            this.setState({
+              description: 'Thank you'
+            });
+            // setTimeout(() => {
+            //   this.setState({
+            //     description: ''
+            //   });
+            // }, 9000);
+          } else {
+            const lnk = Linking.openURL(
+              `mailto:Library.helpdesk@bitsom.edu.in?subject=BITSoM Applicatin Contact Enquiry&body=${this.state.description}`,
+            );
+            const url = lnk;
+            Linking.canOpenURL(url).then(supported => {
+              console.log('supported :- ', supported);
+              if (supported) {
+                return Linking.openURL(url);
+              }
+            });
+          }
+          // result.json().then((resp)=>{
+          //   console.log("resp :- ",resp)
+          // })
+        })
+        .catch(error => {
+          const lnk = Linking.openURL(
+            `mailto:Library.helpdesk@bitsom.edu.in?subject=BITSoM Applicatin Contact Enquiry&body=${this.state.description}`,
+          );
+          const url = lnk;
+          Linking.canOpenURL(url).then(supported => {
+            console.log('supported :- ', supported);
+            if (supported) {
+              return Linking.openURL(url);
+            }
+          });
+        });
+
+      // Mailer.mail({
+      //   subject: 'BITSoM Applicatin Contact Enquiry',
+      //   // recipients: ['Library.helpdesk@bitsom.edu.in'],
+      //   recipients: ['theartistnw@gmail.com'],
+      //   // ccRecipients: ['supportCC@example.com'],
+      //   // bccRecipients: ['supportBCC@example.com'],
+      //   body: this.state.description,
+      //   // customChooserTitle: 'This is my new title', // Android only (defaults to "Send Mail")
+      //   isHTML: true,
+      //   // attachments: [{
+      //   //   // Specify either `path` or `uri` to indicate where to find the file data.
+      //   //   // The API used to create or locate the file will usually indicate which it returns.
+      //   //   // An absolute path will look like: /cacheDir/photos/some image.jpg
+      //   //   // A URI starts with a protocol and looks like: content://appname/cacheDir/photos/some%20image.jpg
+      //   //   path: '', // The absolute path of the file from which to read data.
+      //   //   uri: '', // The uri of the file from which to read the data.
+      //   //   // Specify either `type` or `mimeType` to indicate the type of data.
+      //   //   type: '', // Mime Type: jpg, png, doc, ppt, html, pdf, csv
+      //   //   mimeType: '', // - use only if you want to use custom type
+      //   //   name: '', // Optional: Custom filename for attachment
+      //   // }]
+      // }, (error, event) => {
+      //   if (error !== undefined && error !== null) {
+      //     const lnk = Linking.openURL(`mailto:Library.helpdesk@bitsom.edu.in?subject=BITSoM Applicatin Contact Enquiry&body=${this.state.description}`)
+      //     const url = lnk;
+      //     Linking.canOpenURL(url).then(supported => {
+      //       console.log("supported :- ",supported)
+      //       if (supported) {
+      //         return Linking.openURL(url);
+      //       }
+      //     });
+      //   }
+      // });
+    } else {
+      Alert.alert('Alert!', 'Please Fill The Field Below.', [{text: 'Okay'}], {
+        cancelable: true,
+      });
+    }
+  };
 
   render() {
     return (
@@ -70,12 +168,12 @@ export default class Contact extends Component {
                 <Text style={styles.uNme}>Hello</Text>
                 <Text style={styles.uNme}>{this.state.name}</Text>
                 <Text style={{marginTop: 10, color: '#8A8A8A'}}>
-                  Welcome to Learning Resource Center, BITSoM{' '}
+                  Welcome to Learning Resource Center, BITSoM
                 </Text>
 
-                <Text style={{marginTop: 10, color: '#8A8A8A'}}>
+                {/* <Text style={{marginTop: 10, color: '#8A8A8A'}}>
                   Given below is the contact information for your library.
-                </Text>
+                </Text> */}
               </View>
 
               <View style={styles.info}>
@@ -87,7 +185,7 @@ export default class Contact extends Component {
                 </Text>
               </View>
 
-              <View style={styles.addInfo}>
+              {/* <View style={styles.addInfo}>
                 <Text
                   style={{fontSize: 17, color: '#242960', fontWeight: '700'}}>
                   ADDRESS
@@ -99,13 +197,66 @@ export default class Contact extends Component {
                     400076
                   </Text>
                 </View>
+              </View> */}
+
+              {/* <Button title="Send Mail" onPress={this.handleEmail} /> */}
+
+              <View
+                style={{
+                  // borderRadius: 10,
+                  // shadowColor: '#000',
+                  // shadowOffset: {width: 0, height: 1},
+                  // shadowOpacity: 0.18,
+                  // shadowRadius: 1.0,
+                  // elevation: 1,
+                  marginTop: 20,
+                }}>
+                <TextInput
+                  mode="outlined"
+                  value={this.state.description}
+                  numberOfLines={10}
+                  placeholder="Please enter your Feedback
+                  /Suggestion/General Contact message"
+                  underlineColorAndroid="transparent"
+                  multiline={true}
+                  onChangeText={e => this.setState({description: e})}
+                  // scrollEnabled={true}
+                  // backgroundColor="#f1f1f1"
+                />
               </View>
 
-              <View style={{width: '100%', height: '100%'}}>
+              <View style={styles.buttonMap}>
+                {/* <TouchableOpacity
+                  style={styles.buttonStyle}
+                  // onPress={() =>
+                  //   Linking.openURL('https://goo.gl/maps/C9wFHaEwwDAMGCaq8')
+                  // }
+                  onPress={this.handleEmail}>
+                  <Text style={{fontSize: 18, color: '#252a60'}}>Submit</Text>
+                </TouchableOpacity> */}
+
+                <Button
+                  // onPress={() => Linking.openURL(`mailto:Library.helpdesk@bitsom.edu.in?subject=BITSoM Applicatin Contact Enquiry&body=${this.state.description}`) }
+                  onPress={this.handleEmail}
+                  // color='#f68d2c'
+                  // style={{fontSize:25}}
+                  mode="outlined"
+                  uppercase={false}>
+                  <Text style={{fontSize: 18, color: '#252a60'}}>Submit</Text>
+                </Button>
+              </View>
+
+              {/* <View
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  marginBottom: 300,
+                  marginTop: 20,
+                }}>
                 <WebView
                   setSupportMultipleWindows={true}
                   source={{
-                    uri: `https://docs.google.com/forms/d/e/1FAIpQLSdVbgqVY77fpDMGvunw6_A1gWB9EXqkVGD9cw30pjh7KbD8gA/viewform?usp=sf_link`,
+                    uri: `https://docs.google.com/forms/d/e/1FAIpQLSelAGnCe27x9myZCCpMfEOYB_BqLgi7_YeZ9PgkVLQpGr4YOw/viewform?fbzx=5452600519703962225`,
                   }}
                   javaScriptEnabled={true}
                   domStorageEnabled={true}
@@ -126,20 +277,18 @@ export default class Contact extends Component {
                     })
                   }
                 />
-              </View>
+              </View> */}
 
-              <View style={styles.buttonMap}>
+              {/* <View style={styles.buttonMap}>
                 <TouchableOpacity
                   style={styles.buttonStyle}
-                  onPress={() =>
-                    Linking.openURL('https://goo.gl/maps/C9wFHaEwwDAMGCaq8')
-                  }>
-                  <Text style={{ fontSize: 16, color: '#252a60' }}>Open Map</Text>
+                  // onPress={() =>
+                  //   Linking.openURL('https://goo.gl/maps/C9wFHaEwwDAMGCaq8')
+                  // }
+                  onPress={this.handleEmail}>
+                  <Text style={{fontSize: 16, color: '#252a60'}}>Send</Text>
                 </TouchableOpacity>
-              </View>
-
-
-              
+              </View> */}
             </View>
           </ScrollView>
         </>
@@ -187,7 +336,7 @@ const styles = StyleSheet.create({
     marginTop: '5%',
     marginLeft: '5%',
     marginRight: '5%',
-    marginBottom:"100%"
+    marginBottom: '50%',
   },
   fontInfo: {
     fontSize: 16,
@@ -217,7 +366,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
     padding: 5,
     paddingHorizontal: 0,
-    marginLeft: '70%',
+    marginLeft: '10%',
+    marginRight: '10%',
     marginBottom: '10%',
   },
   buttonStyle: {
