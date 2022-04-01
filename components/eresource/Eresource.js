@@ -266,9 +266,14 @@ export default class Home extends Component {
             'There has been a problem with your fetch operation: ' +
               error.message,
           );
-          Alert.alert('Error', "Something went wrong. Please try again.", [{text: 'Okay'}], {
-            cancelable: true,
-          });
+          Alert.alert(
+            'Error',
+            'Something went wrong. Please try again.',
+            [{text: 'Okay'}],
+            {
+              cancelable: true,
+            },
+          );
 
           this.setState({
             loaderSearch: false,
@@ -425,7 +430,7 @@ export default class Home extends Component {
                     }}
                   />
 
-                  {this.state.loaderSearch ? (
+                  {this.state.loaderSearch && (
                     <View
                       style={{
                         width: '100%',
@@ -436,11 +441,12 @@ export default class Home extends Component {
                       }}>
                       <ActivityIndicator size="large" color="#0d6efd" />
                     </View>
-                  ) : null}
+                  )}
 
                   {this.state.showSearchBtn ? (
                     <>
                       <TouchableOpacity
+                      disabled={this.state.loaderSearch ? true :false}
                         onPress={value => this.checkbooks(value)}
                         style={{
                           borderWidth: 1,
@@ -556,7 +562,6 @@ export default class Home extends Component {
                                         shadowOpacity: 0.18,
                                         shadowRadius: 1.0,
                                         elevation: 1,
-                                        
                                       }}>
                                       <View
                                         style={{
@@ -784,7 +789,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.18,
     shadowRadius: 1.0,
     elevation: 1,
-    
   },
   textCommon: {
     fontSize: 16,

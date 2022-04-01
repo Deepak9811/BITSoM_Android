@@ -281,7 +281,7 @@ export default class About extends Component {
             </View>
 
             <View style={{marginTop: '5%'}}>
-              <TouchableOpacity onPress={value => this.checkCatalog(value)}>
+              <TouchableOpacity onPress={value => this.checkCatalog(value)} disabled={this.state.searchLoader ? true:false}>
                 <LinearGradient
                   colors={['#f68823', '#b03024']}
                   style={styles.signIn}>

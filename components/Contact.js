@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Text,
   StyleSheet,
@@ -7,7 +7,6 @@ import {
   ActivityIndicator,
   Linking,
   ScrollView,
-  Image,
   Alert,
   // TextInput,
 } from 'react-native';
@@ -20,119 +19,70 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {WebView} from 'react-native-webview';
-import email from 'react-native-email';
 import {TextInput, Button} from 'react-native-paper';
-import Mailer from 'react-native-mail';
+import * as Animatable from 'react-native-animatable';
+import Feather from 'react-native-vector-icons/Feather';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import LinearGradient from 'react-native-linear-gradient';
 
-export default class Contact extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loader: true,
-      name: 'NaN',
-      description: '',
-    };
-  }
+const Contact = () => {
+  const [loader, setloader] = useState(false);
+  const [name, setname] = useState('');
+  const [description, setdescription] = useState('');
+  const [showThank, setshowThank] = useState(true);
+  const [hideThnk, sethideThnk] = useState(true);
+  const [responseMsg, setresponseMsg] = useState('Thank You');
+  const [showError, setshowError] = useState(true);
 
-  async componentDidMount() {
+  useEffect(async () => {
     try {
       const sName = JSON.parse(await AsyncStorage.getItem('sName'));
       const sNameLast = JSON.parse(await AsyncStorage.getItem('sNameLast'));
 
-      this.setState({
-        name: sName + ' ' + sNameLast,
-      });
-      // console.log('name : ', this.state.name);
+      setname(sName + ' ' + sNameLast);
     } catch (error) {
       console.log('There has problem in AsyncStorage : ' + error.message);
     }
-  }
+  }, []);
 
-  handleEmail = () => {
-    if (this.state.description !== '') {
-      const to = ['Library.helpdesk@bitsom.edu.in']; // string or array of email addresses
-      // const to = ['theartistnw@gmail.com']; // string or array of email addresses
-      email(to, {
-        // Optional additional arguments
-        // cc: ['bazzy@moo.com', 'doooo@daaa.com'], // string or array of email addresses
-        // bcc: 'mee@mee.com', // string or array of email addresses
-        subject: 'BITSoM Application Contact Enquiry',
-        body: this.state.description,
+  const handleEmail = () => {
+    if (description !== '') {
+      setloader(true);
+      let receiverEmail = "Library.helpdesk@bitsom.edu.in"
+      let enquiry= 'BITSoM Applicatin Contact Enquiry'
+      let url = `https://bitsomapi.libcon.in/api/sendEmail?toId=theartistnw@gmail.com&subject=${enquiry}&bodyText=${description}`;
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          Accepts: 'application/json',
+          'content-type': 'application/json',
+        },
       })
         .then(result => {
-          console.log('result :- ', result);
-          if (result === true) {
-            console.log('rsult true');
-            this.setState({
-              description: 'Thank you'
-            });
-            // setTimeout(() => {
-            //   this.setState({
-            //     description: ''
-            //   });
-            // }, 9000);
-          } else {
-            const lnk = Linking.openURL(
-              `mailto:Library.helpdesk@bitsom.edu.in?subject=BITSoM Applicatin Contact Enquiry&body=${this.state.description}`,
-            );
-            const url = lnk;
-            Linking.canOpenURL(url).then(supported => {
-              console.log('supported :- ', supported);
-              if (supported) {
-                return Linking.openURL(url);
-              }
-            });
-          }
-          // result.json().then((resp)=>{
-          //   console.log("resp :- ",resp)
-          // })
-        })
-        .catch(error => {
-          const lnk = Linking.openURL(
-            `mailto:Library.helpdesk@bitsom.edu.in?subject=BITSoM Applicatin Contact Enquiry&body=${this.state.description}`,
-          );
-          const url = lnk;
-          Linking.canOpenURL(url).then(supported => {
-            console.log('supported :- ', supported);
-            if (supported) {
-              return Linking.openURL(url);
+          result.json().then(resp => {
+            console.log(resp);
+            if (resp.status === 'success') {
+              setdescription('Thank you');
+              setshowThank(false);
+              setloader(false);
+
+              setTimeout(() => {
+                sethideThnk(false);
+              }, 5000);
+            } else {
+              setshowThank(false);
+              setloader(false);
+              setshowError(false);
+              setresponseMsg('Something went wrong. Please try again.');
             }
           });
+        })
+        .catch(error => {
+          setshowThank(false);
+          setloader(false);
+          setshowError(false);
+          setresponseMsg('Something went wrong. Please try again.');
         });
-
-      // Mailer.mail({
-      //   subject: 'BITSoM Applicatin Contact Enquiry',
-      //   // recipients: ['Library.helpdesk@bitsom.edu.in'],
-      //   recipients: ['theartistnw@gmail.com'],
-      //   // ccRecipients: ['supportCC@example.com'],
-      //   // bccRecipients: ['supportBCC@example.com'],
-      //   body: this.state.description,
-      //   // customChooserTitle: 'This is my new title', // Android only (defaults to "Send Mail")
-      //   isHTML: true,
-      //   // attachments: [{
-      //   //   // Specify either `path` or `uri` to indicate where to find the file data.
-      //   //   // The API used to create or locate the file will usually indicate which it returns.
-      //   //   // An absolute path will look like: /cacheDir/photos/some image.jpg
-      //   //   // A URI starts with a protocol and looks like: content://appname/cacheDir/photos/some%20image.jpg
-      //   //   path: '', // The absolute path of the file from which to read data.
-      //   //   uri: '', // The uri of the file from which to read the data.
-      //   //   // Specify either `type` or `mimeType` to indicate the type of data.
-      //   //   type: '', // Mime Type: jpg, png, doc, ppt, html, pdf, csv
-      //   //   mimeType: '', // - use only if you want to use custom type
-      //   //   name: '', // Optional: Custom filename for attachment
-      //   // }]
-      // }, (error, event) => {
-      //   if (error !== undefined && error !== null) {
-      //     const lnk = Linking.openURL(`mailto:Library.helpdesk@bitsom.edu.in?subject=BITSoM Applicatin Contact Enquiry&body=${this.state.description}`)
-      //     const url = lnk;
-      //     Linking.canOpenURL(url).then(supported => {
-      //       console.log("supported :- ",supported)
-      //       if (supported) {
-      //         return Linking.openURL(url);
-      //       }
-      //     });
-      //   }
-      // });
     } else {
       Alert.alert('Alert!', 'Please Fill The Field Below.', [{text: 'Okay'}], {
         cancelable: true,
@@ -140,183 +90,183 @@ export default class Contact extends Component {
     }
   };
 
-  render() {
-    return (
-      <SafeAreaView style={styles.container}>
-        <Appbar.Header style={styles.ttl}>
-          <TouchableOpacity
-            style={{paddingLeft: '2%'}}
-            onPress={() => this.props.navigation.goBack()}>
-            <AntDesign name="arrowleft" color="#05375a" size={25} />
-          </TouchableOpacity>
-          <Appbar.Content title="Contact The Library" />
-        </Appbar.Header>
+  return (
+    <SafeAreaView style={styles.container}>
+      <Appbar.Header style={styles.ttl}>
+        <TouchableOpacity
+          style={{paddingLeft: '2%'}}
+          onPress={() => this.props.navigation.goBack()}>
+          <AntDesign name="arrowleft" color="#05375a" size={25} />
+        </TouchableOpacity>
+        <Appbar.Content title="Contact US" />
+      </Appbar.Header>
 
-        <>
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{flexGrow: 1}}>
-            {/* {this.state.loader && (
-              <View style={styles.activityIndicatorStyle}>
-                <ActivityIndicator color="#57A3FF" size="large" />
-              </View>
-            )} */}
+      <>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{flexGrow: 1}}>
+          <View style={styles.mainContainer}>
+            {/* ===============INFO======================= */}
+            <View style={styles.uDetail}>
+              <Text style={styles.uNme}>Hello</Text>
+              <Text style={styles.uNme}>{name}</Text>
+              <Text style={{marginTop: 10, color: '#8A8A8A'}}>
+                Welcome to Learning Resource Center, BITSoM
+              </Text>
 
-            <View style={styles.mainContainer}>
-              {/* ===============INFO======================= */}
-              <View style={styles.uDetail}>
-                <Text style={styles.uNme}>Hello</Text>
-                <Text style={styles.uNme}>{this.state.name}</Text>
-                <Text style={{marginTop: 10, color: '#8A8A8A'}}>
-                  Welcome to Learning Resource Center, BITSoM
-                </Text>
-
-                {/* <Text style={{marginTop: 10, color: '#8A8A8A'}}>
-                  Given below is the contact information for your library.
-                </Text> */}
-              </View>
-
-              <View style={styles.info}>
-                <Text style={styles.fontInfo}>Dr. Sanjay Kataria</Text>
-                <Text style={styles.fontInfo}>Librarian,</Text>
-                <Text style={styles.fontInfo}>BITS- School of Management,</Text>
-                <Text style={styles.fontInfo}>
-                  E-mail: sanjay.kataria@bitsom.edu.in
-                </Text>
-              </View>
-
-              {/* <View style={styles.addInfo}>
-                <Text
-                  style={{fontSize: 17, color: '#242960', fontWeight: '700'}}>
-                  ADDRESS
-                </Text>
-
-                <View>
-                  <Text style={{color: '#8A8A8A'}}>
-                    8th Floor, Hiranandani Knowledge Park, Powai, Mumbai -
-                    400076
-                  </Text>
-                </View>
-              </View> */}
-
-              {/* <Button title="Send Mail" onPress={this.handleEmail} /> */}
-
-              <View
-                style={{
-                  // borderRadius: 10,
-                  // shadowColor: '#000',
-                  // shadowOffset: {width: 0, height: 1},
-                  // shadowOpacity: 0.18,
-                  // shadowRadius: 1.0,
-                  // elevation: 1,
-                  marginTop: 20,
-                }}>
-                <TextInput
-                  mode="outlined"
-                  value={this.state.description}
-                  numberOfLines={10}
-                  placeholder="Please enter your Feedback
-                  /Suggestion/General Contact message"
-                  underlineColorAndroid="transparent"
-                  multiline={true}
-                  onChangeText={e => this.setState({description: e})}
-                  // scrollEnabled={true}
-                  // backgroundColor="#f1f1f1"
-                />
-              </View>
-
-              <View style={styles.buttonMap}>
-                {/* <TouchableOpacity
-                  style={styles.buttonStyle}
-                  // onPress={() =>
-                  //   Linking.openURL('https://goo.gl/maps/C9wFHaEwwDAMGCaq8')
-                  // }
-                  onPress={this.handleEmail}>
-                  <Text style={{fontSize: 18, color: '#252a60'}}>Submit</Text>
-                </TouchableOpacity> */}
-
-                <Button
-                  // onPress={() => Linking.openURL(`mailto:Library.helpdesk@bitsom.edu.in?subject=BITSoM Applicatin Contact Enquiry&body=${this.state.description}`) }
-                  onPress={this.handleEmail}
-                  // color='#f68d2c'
-                  // style={{fontSize:25}}
-                  mode="outlined"
-                  uppercase={false}>
-                  <Text style={{fontSize: 18, color: '#252a60'}}>Submit</Text>
-                </Button>
-              </View>
-
-              {/* <View
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  marginBottom: 300,
-                  marginTop: 20,
-                }}>
-                <WebView
-                  setSupportMultipleWindows={true}
-                  source={{
-                    uri: `https://docs.google.com/forms/d/e/1FAIpQLSelAGnCe27x9myZCCpMfEOYB_BqLgi7_YeZ9PgkVLQpGr4YOw/viewform?fbzx=5452600519703962225`,
-                  }}
-                  javaScriptEnabled={true}
-                  domStorageEnabled={true}
-                  setJavaScriptCanOpenWindowsAutomatically={true}
-                  thirdPartyCookiesEnabled={true}
-                  injectedJavaScript={INJECTED_JAVASCRIPT}
-                  onMessage={onMessage}
-                  ref={r => (this.webref = r)}
-                  onNavigationStateChange={this.getnextUrl}
-                  onLoadStart={() =>
-                    this.setState({
-                      loader: true,
-                    })
-                  }
-                  onLoadEnd={() =>
-                    this.setState({
-                      loader: false,
-                    })
-                  }
-                />
-              </View> */}
-
-              {/* <View style={styles.buttonMap}>
-                <TouchableOpacity
-                  style={styles.buttonStyle}
-                  // onPress={() =>
-                  //   Linking.openURL('https://goo.gl/maps/C9wFHaEwwDAMGCaq8')
-                  // }
-                  onPress={this.handleEmail}>
-                  <Text style={{fontSize: 16, color: '#252a60'}}>Send</Text>
-                </TouchableOpacity>
-              </View> */}
+              {/* <Text style={{marginTop: 10, color: '#8A8A8A'}}>
+              Given below is the contact information for your library.
+            </Text> */}
             </View>
-          </ScrollView>
-        </>
 
-        <View
-          style={{
-            paddingHorizontal: 5,
-            paddingVertical: 8,
-            // marginTop: '37%',
-            // position: "absolute",
-            // left: "30%",
-            // bottom: 0
-          }}>
-          <TouchableOpacity
-            onPress={() => Linking.openURL('https://libcon.in/')}
+            <View style={styles.info}>
+              <Text style={styles.fontInfo}>Dr. Sanjay Kataria</Text>
+              <Text style={styles.fontInfo}>Librarian,</Text>
+              <Text style={styles.fontInfo}>BITS- School of Management,</Text>
+              <Text style={styles.fontInfo}>
+                E-mail: sanjay.kataria@bitsom.edu.in
+              </Text>
+            </View>
+
+            {hideThnk && (
+              <>
+                {showThank ? (
+                  <>
+                    <View
+                      style={{
+                        marginTop: 20,
+                      }}>
+                      <TextInput
+                        mode="outlined"
+                        value={description}
+                        numberOfLines={10}
+                        placeholder="Please enter your Feedback
+                                   /Suggestion/General Contact message"
+                        underlineColorAndroid="transparent"
+                        multiline={true}
+                        onChangeText={e => setdescription(e)}
+                      />
+                    </View>
+
+                    <View style={styles.buttonMap}>
+                      {loader ? (
+                        <>
+                          <TouchableOpacity style={styles.buttonStyle}>
+                            <ActivityIndicator color="#57A3FF" size="large" />
+                          </TouchableOpacity>
+                        </>
+                      ) : (
+                        <TouchableOpacity
+                          onPress={handleEmail}
+                          style={styles.buttonStyle}>
+                          <Text style={{fontSize: 20, color: '#252a60'}}>
+                            Submit
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  </>
+                ) : (
+                  <LinearGradient
+                    colors={['#fff', '#fff']}
+                    style={styles.thnks}>
+                    <View style={styles.thnkRow}>
+                      <Animatable.Text
+                        animation={'rubberBand'}
+                        style={styles.thnksText}>
+                        {responseMsg}
+                      </Animatable.Text>
+                      <Animatable.View
+                        style={styles.successIcon}
+                        animation={'bounceIn'}>
+                        {showError ? (
+                          <Feather
+                            name="check-circle"
+                            color="green"
+                            size={28}
+                          />
+                        ) : (
+                          <MaterialIcons
+                            name="error-outline"
+                            color="#f66"
+                            size={28}
+                          />
+                        )}
+                      </Animatable.View>
+                    </View>
+                  </LinearGradient>
+                )}
+              </>
+            )}
+
+            {/* <View
             style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
+              width: '100%',
+              height: '100%',
+              marginBottom: 300,
+              marginTop: 20,
             }}>
-            <Text>Powered by</Text>
-            <Text style={{color: '#f68823'}}> LIBCON</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-    );
-  }
-}
+            <WebView
+              setSupportMultipleWindows={true}
+              source={{
+                uri: `https://docs.google.com/forms/d/e/1FAIpQLSelAGnCe27x9myZCCpMfEOYB_BqLgi7_YeZ9PgkVLQpGr4YOw/viewform?fbzx=5452600519703962225`,
+              }}
+              javaScriptEnabled={true}
+              domStorageEnabled={true}
+              setJavaScriptCanOpenWindowsAutomatically={true}
+              thirdPartyCookiesEnabled={true}
+              injectedJavaScript={INJECTED_JAVASCRIPT}
+              onMessage={onMessage}
+              ref={r => (this.webref = r)}
+              onNavigationStateChange={this.getnextUrl}
+              onLoadStart={() =>
+                this.setState({
+                  loader: true,
+                })
+              }
+              onLoadEnd={() =>
+                this.setState({
+                  loader: false,
+                })
+              }
+            />
+          </View> */}
+
+            {/* <View style={styles.buttonMap}>
+            <TouchableOpacity
+              style={styles.buttonStyle}
+              // onPress={() =>
+              //   Linking.openURL('https://goo.gl/maps/C9wFHaEwwDAMGCaq8')
+              // }
+              onPress={this.handleEmail}>
+              <Text style={{fontSize: 16, color: '#252a60'}}>Send</Text>
+            </TouchableOpacity>
+          </View> */}
+          </View>
+        </ScrollView>
+      </>
+
+      <View
+        style={{
+          paddingHorizontal: 5,
+          paddingVertical: 8,
+        }}>
+        <TouchableOpacity
+          onPress={() => Linking.openURL('https://libcon.in/')}
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <Text>Powered by</Text>
+          <Text style={{color: '#f68823'}}> LIBCON</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
+};
+
+export default Contact;
 
 const INJECTED_JAVASCRIPT = `(function() {
   const tokenLocalStorage = window.localStorage.getItem('userId');
@@ -343,25 +293,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: '1%',
   },
-  activityIndicatorStyle: {
-    flex: 1,
-    position: 'absolute',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    marginBottom: 'auto',
-    left: 0,
-    right: 0,
-    top: '-10%',
-    bottom: 0,
-    justifyContent: 'center',
-    width: '100%',
-    height: '100%',
-    zIndex: 3,
-  },
-  addInfo: {
-    marginTop: '5%',
-    marginBottom: '2%',
-  },
   buttonMap: {
     marginTop: 10,
     padding: 5,
@@ -371,8 +302,7 @@ const styles = StyleSheet.create({
     marginBottom: '10%',
   },
   buttonStyle: {
-    padding: 5,
-    // backgroundColor: 'red',
+    padding: 8,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
@@ -381,10 +311,36 @@ const styles = StyleSheet.create({
   },
 
   uDetail: {
-    // marginTop: 10,
     marginBottom: 20,
   },
   uNme: {
     fontSize: 25,
+  },
+
+  thnks: {
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.18,
+    shadowRadius: 1.0,
+    elevation: 1,
+    marginTop: '15%',
+  },
+  thnkRow: {
+    flexDirection: 'row',
+    padding: '5%',
+    marginLeft: '5%',
+    justifyContent: 'center',
+  },
+  thnksText: {
+    fontWeight: 'bold',
+    marginRight: '4%',
+    marginTop: '1%',
+    fontSize: 18,
+    width: '80%',
+    textAlign: 'center',
+  },
+  successIcon: {
+    justifyContent: 'center',
   },
 });

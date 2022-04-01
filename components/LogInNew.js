@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   Text,
   StyleSheet,
@@ -21,13 +21,12 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Feather from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
 import * as Animatable from 'react-native-animatable';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { Picker as SelectPicker } from '@react-native-picker/picker';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
+import {Picker as SelectPicker} from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
 import BcryptReactNative from 'bcrypt-react-native';
-import {API_URL} from "@env"
+import {API_URL} from '@env';
 
 export default class LogInNew extends Component {
   constructor(props) {
@@ -74,9 +73,8 @@ export default class LogInNew extends Component {
   }
 
   async componentDidMount() {
-
     const email = JSON.parse(await AsyncStorage.getItem('email'));
-    console.log("email : ", email)
+    console.log('email : ', email);
     if (email !== null) {
       this.props.navigation.navigate('Home');
     } else {
@@ -84,31 +82,20 @@ export default class LogInNew extends Component {
         showPage: true,
       });
     }
-
-
   }
 
   onPickerValueChange = (value, index, label) => {
-    this.setState(
-      {
-        purposeValue: value,
-        // purposeName: this.state.terminalData[index].p_name,
-      },
-
-    );
+    this.setState({
+      purposeValue: value,
+      // purposeName: this.state.terminalData[index].p_name,
+    });
   };
 
   check() {
-    if (
-      this.state.email === '' ||
-      this.state.pass === ''
-    ) {
+    if (this.state.email === '' || this.state.pass === '') {
       console.log(this.state.pass);
       Alert.alert('', 'Please enter your account details to login.');
-    } else if (
-      this.state.email !== '' &&
-      this.state.pass !== ''
-    ) {
+    } else if (this.state.email !== '' && this.state.pass !== '') {
       console.log(this.state.pass);
       this.signIn();
     } else {
@@ -117,40 +104,44 @@ export default class LogInNew extends Component {
   }
 
   signIn() {
-    this.setState({ loader: true });
+    this.setState({loader: true});
     // console.log(this.state.email, this.state.pass, this.state.purposeValue);
 
-    let emails = this.state.email
+    let emails = this.state.email;
 
-    fetch(
-      `${API_URL}LIBCON-PATINFO&parameter=${emails}`,
-      {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'content-type': 'application/json',
-        },
+    fetch(`${API_URL}LIBCON-PATINFO&parameter=${emails}`, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'content-type': 'application/json',
       },
-    )
+    })
       .then(result => {
         result.json().then(async resp => {
           // console.log("resp : ", resp.data.response[0]);
-          if(resp.status === "success"){
+          if (resp.status === 'success') {
             if (resp.length !== 0) {
               try {
-                await AsyncStorage.setItem('userId', JSON.stringify(resp.data.response[0][0]));
-                await AsyncStorage.setItem('sName', JSON.stringify(resp.data.response[0][2]));
-                await AsyncStorage.setItem('sNameLast', JSON.stringify(resp.data.response[0][3]));
-  
+                await AsyncStorage.setItem(
+                  'userId',
+                  JSON.stringify(resp.data.response[0][0]),
+                );
+                await AsyncStorage.setItem(
+                  'sName',
+                  JSON.stringify(resp.data.response[0][2]),
+                );
+                await AsyncStorage.setItem(
+                  'sNameLast',
+                  JSON.stringify(resp.data.response[0][3]),
+                );
               } catch (error) {
-                console.log("try : ", error)
+                console.log('try : ', error);
               }
-  
+
               const sname = resp.data.response[0][4];
               // console.log('resp : ', sname);
-  
+
               if (this.state.email === sname) {
-  
                 try {
                   const salt = await BcryptReactNative.getSalt(10);
                   const hash = (salt, resp.data.response[0][5]);
@@ -158,40 +149,47 @@ export default class LogInNew extends Component {
                     this.state.pass,
                     hash,
                   );
-  
+
                   if (isSame === true) {
-  
-                    await AsyncStorage.setItem('email', JSON.stringify(resp.data.response[0][4]));
-  
+                    await AsyncStorage.setItem(
+                      'email',
+                      JSON.stringify(resp.data.response[0][4]),
+                    );
+
                     this.setState({
                       userData: resp.data.response[0],
                     });
-  
+
                     this.props.navigation.push('Home');
-  
                   } else {
-                    Alert.alert("", "Please enter your correct account details to login.", [
-                      { text: 'Okay' }
-                    ], { cancelable: true })
+                    Alert.alert(
+                      '',
+                      'Please enter your correct account details to login.',
+                      [{text: 'Okay'}],
+                      {cancelable: true},
+                    );
                     this.setState({
                       loader: false,
                     });
                   }
-  
+
                   this.setState({
                     loader: false,
                   });
                 } catch (e) {
-                  console.log({ e });
+                  console.log({e});
                 }
               } else {
-                Alert.alert('', 'Please enter your correct account details to login.');
+                Alert.alert(
+                  '',
+                  'Please enter your correct account details to login.',
+                );
                 this.setState({
                   loader: false,
                 });
               }
-            } 
-          }else {
+            }
+          } else {
             this.setState({
               loader: false,
             });
@@ -201,21 +199,16 @@ export default class LogInNew extends Component {
               ToastAndroid.CENTER,
             );
           }
-          
         });
       })
       .catch(error => {
-        ToastAndroid.show(
-          resp.message,
-          ToastAndroid.LONG,
-          ToastAndroid.CENTER,
-        );
+        ToastAndroid.show("There has been a problem with your fetch operation. Please try again", ToastAndroid.LONG, ToastAndroid.CENTER);
         this.setState({
           loader: false,
         });
         console.log(
           'There has been a problem with your fetch operation: ' +
-          error.message,
+            error.message,
         );
       });
 
@@ -240,9 +233,7 @@ export default class LogInNew extends Component {
     return (
       <>
         {this.state.showPage ? (
-          <View
-            
-            style={styles.container}>
+          <View style={styles.container}>
             <StatusBar backgroundColor="#fff9" barStyle="dark-content" />
 
             <View
@@ -255,8 +246,7 @@ export default class LogInNew extends Component {
               <Image source={require('./image/bitsom.png')} />
             </View>
 
-
-            {this.state.loader ? (
+            {/* {this.state.loader ? (
               <>
                 <View
                   style={{
@@ -278,16 +268,18 @@ export default class LogInNew extends Component {
                   <ActivityIndicator size="large" color="#0d6efd" />
                 </View>
               </>
-            ) : null}
+            ) : null} */}
 
-            <Animatable.View style={[styles.footer]} animation="fadeInUpBig" duration={1000} >
+            <Animatable.View
+              style={[styles.footer]}
+              animation="fadeInUpBig"
+              duration={1000}>
               <ScrollView showsVerticalScrollIndicator={false}>
-
                 <View>
                   {/* --------Email-------------------- */}
 
                   <View>
-                    <Text style={[styles.text_footer, { marginTop: 20 }]}>
+                    <Text style={[styles.text_footer, {marginTop: 20}]}>
                       {' '}
                       Email{' '}
                     </Text>
@@ -319,7 +311,7 @@ export default class LogInNew extends Component {
                   </View>
 
                   {/* ------------Password------------- */}
-                  <Text style={[styles.text_footer, { marginTop: 20 }]}>
+                  <Text style={[styles.text_footer, {marginTop: 20}]}>
                     {' '}
                     Password{' '}
                   </Text>
@@ -359,20 +351,25 @@ export default class LogInNew extends Component {
                   </View>
 
                   <TouchableOpacity
+                    disabled={this.state.loader ? true : false}
                     style={styles.button}
                     onPress={() => this.check()}>
                     <LinearGradient
                       colors={['#f68823', '#b03024']}
                       style={styles.signIn}>
-                      <Text
-                        style={[
-                          styles.textSign,
-                          {
-                            color: '#fff',
-                          },
-                        ]}>
-                        Sign In
-                      </Text>
+                      {!this.state.loader ? (
+                        <Text
+                          style={[
+                            styles.textSign,
+                            {
+                              color: '#fff',
+                            },
+                          ]}>
+                          Sign In
+                        </Text>
+                      ) : (
+                        <ActivityIndicator size="large" color="#fff" />
+                      )}
                     </LinearGradient>
                   </TouchableOpacity>
 
@@ -390,7 +387,7 @@ export default class LogInNew extends Component {
                         alignItems: 'center',
                       }}>
                       <Text>Powered by</Text>
-                      <Text style={{ color: '#f68823' }}> LIBCON</Text>
+                      <Text style={{color: '#f68823'}}> LIBCON</Text>
                     </TouchableOpacity>
                   </View>
                 </View>

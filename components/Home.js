@@ -332,10 +332,7 @@ export default class Home extends Component {
             console.log('Feedback Response resp  :- ', resp);
 
             if (resp.status === 'success') {
-              // this.setState({
-              //   eventData: resp.data,
-              //   showEvents: true,
-              // })
+             
 
               this.setState({
                 showFeedBack: false,
@@ -353,23 +350,18 @@ export default class Home extends Component {
                 ToastAndroid.LONG,
                 ToastAndroid.CENTER,
               );
-              // this.setState({
-              //   showEvents: false,
-              // })
+              
             }
           });
         })
         .catch(error => {
-          alert(error.message);
           Alert.alert(
             'Error!',
             'Something went wrong. Please try again.',
             [{text: 'Okay'}],
             {cancelable: true},
           );
-          // this.setState({
-          //   showEvents: false,
-          // })
+          
         });
     } else {
       Alert.alert(
@@ -543,13 +535,13 @@ export default class Home extends Component {
     }
   }
 
-  backButton() {
-    BackHandler.addEventListener(
-      'hardwareBackPress',
+  // backButton() {
+  //   BackHandler.addEventListener(
+  //     'hardwareBackPress',
 
-      this.disableBackButton(),
-    );
-  }
+  //     this.disableBackButton(),
+  //   );
+  // }
 
   componentWillUnmount() {
     BackHandler.removeEventListener(
@@ -561,18 +553,14 @@ export default class Home extends Component {
 
   disableBackButton() {
     BackHandler.exitApp();
-    // Alert.alert('Exit From App', 'Do you want to exit from app ?', [
-    //   {text: 'Yes', onPress: () =>  BackHandler.exitApp()},
-    //   {text: 'No', onPress: () => console.warn('No Pressed')},
-    // ]);
     return true;
   }
 
   logOut() {
-    BackHandler.removeEventListener('hardwareBackPress', this.disableBack());
+    BackHandler.removeEventListener('hardwareBackPress', this.logOutNClear());
   }
 
-  disableBack() {
+  logOutNClear() {
     Alert.alert(
       'Log out from App',
       'Do you want to log out from app ?',
@@ -636,29 +624,13 @@ export default class Home extends Component {
                             size={15}
                             style={{marginLeft: 5, marginTop: 3,marginRight:10}}
                           />
-
-                          {/* <TouchableOpacity
-                            style={styles.showM}
-                            onPress={() =>
-                              this.setState({
-                                showSideMenu: true,
-                              })
-                            }>
-                            <Feather name="menu" size={40} />
-                          </TouchableOpacity> */}
                         </View>
-                        {/* <TouchableOpacity
-                            style={styles.showM}
-                            onPress ={ ( ) => this.props.navigation.openDrawer()}>
-                            <Feather name="menu" size={40} color="#fff"/>
-                          </TouchableOpacity> */}
 
                       </TouchableOpacity>
                     </View>
                     <Text style={styles.uNme}>{this.state.name}</Text>
                     <Text style={{marginTop: 10, color: '#FAFAFA'}}>
                       Welcome to Learning Resource Center, BITSoM
-                      {/*  */}
                     </Text>
                   </View>
 
@@ -681,20 +653,6 @@ export default class Home extends Component {
                               }}>
                               <Feather name="user" color="#fe8c00" size={28} />
                             </View>
-
-                            {/* <View
-                              style={{
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                marginTop: 18,
-                                marginBottom: 20,
-                              }}>
-                              <Text style={{color: '#717171'}}>
-                                Your Profile
-                              </Text>
-                            </View> */}
-
-                            
 
                             <View
                               style={{
@@ -735,7 +693,6 @@ export default class Home extends Component {
                               <Feather name="lock" color="#fe8c00" size={28} />
                             </View>
 
-
                             <View
                               style={{
                                 justifyContent: 'center',
@@ -759,7 +716,6 @@ export default class Home extends Component {
                     <View style={{width: '31%', marginLeft: 10, marginTop: 10}}>
                       <TouchableOpacity
                         style={styles.bxShoadow}
-                        // onPress={()=>this.props.navigation.openDrawer()}
                         onPress={() => this.props.navigation.push('About')}
                         >
                         <LinearGradient
@@ -862,21 +818,8 @@ export default class Home extends Component {
                                 size={28}
                               />
                             </View>
-
-                            {/* <View
-                              style={{
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                paddingTop: 17,
-                                paddingBottom: 25,
-                              }}>
-                              <Text style={{color: '#717171'}}>
-                                E-Resources{' '}
-                              </Text>
-                            </View> */}
-
                             
-                              <View
+                            <View
                               style={{
                                 justifyContent: 'center',
                                 alignItems: 'center',
@@ -889,9 +832,6 @@ export default class Home extends Component {
 
                               <Text style={{color: '#717171'}}></Text>
                             </View>
-
-
-                            
                           </View>
                         </LinearGradient>
                       </TouchableOpacity>
@@ -929,7 +869,6 @@ export default class Home extends Component {
                               <Text style={{color: '#717171'}}>
                               Contact
                               </Text>
-
                               <Text style={{color: '#717171'}}>US</Text>
                             </View>
 
@@ -1038,12 +977,8 @@ export default class Home extends Component {
                                             borderRadius: 50,
                                           }}
                                           source={{
-                                            uri:
-                                              item.image !== ''
-                                                ? item.image
-                                                : undefined,
+                                            uri: item.image !== '' ? item.image : undefined,
                                           }}
-                                          // source={{uri: item.image}}
                                         />
                                       </View>
                                     </View>
@@ -1069,7 +1004,7 @@ export default class Home extends Component {
                           }}></View>
 
                         <View style={{marginBottom: '5%', marginTop: '10%'}}>
-                          <Text>News And Notices.</Text>
+                          <Text>Quote of the Day</Text>
                         </View>
 
                         <View style={styles.secondContainer}>
@@ -1109,8 +1044,7 @@ export default class Home extends Component {
                                   <View
                                     style={{
                                       width: '100%',
-                                      // flexDirection: 'row',
-                                      // justifyContent: 'space-between',
+                                    
                                     }}>
                                     <View style={styles.fdTitle}>
                                       <Text style={styles.txtfd}>
@@ -1118,35 +1052,6 @@ export default class Home extends Component {
                                       </Text>
                                     </View>
 
-                                    {/* <View style={styles.fdTitle}>
-                                      <Text style={styles.txtfd}>
-                                        {this.state.fdtitle}
-                                      </Text>
-                                    </View> */}
-
-                                    {/* {this.state.showFeedBack ? (
-                                      <TouchableOpacity
-                                        style={styles.rightIcon}
-                                        onPress={() => this.HideFeed()}>
-                                        <Feather
-                                          name="chevron-up"
-                                          color="#5ec6e9"
-                                          size={25}
-                                          style={[styles.rightM]}
-                                        />
-                                      </TouchableOpacity>
-                                    ) : (
-                                      <TouchableOpacity
-                                        style={styles.rightIcon}
-                                        onPress={() => this.showFeed()}>
-                                        <Feather
-                                          name="chevron-down"
-                                          color="#3860cc"
-                                          size={25}
-                                          style={[styles.rightM]}
-                                        />
-                                      </TouchableOpacity>
-                                    )} */}
                                   </View>
                                 ) : (
                                   <View
@@ -1189,7 +1094,6 @@ export default class Home extends Component {
                                     padding: 5,
                                   }}>
                                   {this.state.newFeedData.map((item, i) => {
-                                    // { console.log("item.mcq 1 :- ", item.type) }
                                     this.state.typ = item.type;
                                     this.state.showRate = true;
 
@@ -1198,18 +1102,15 @@ export default class Home extends Component {
                                       this.state.showGEN = false;
                                       this.state.showMcq = false;
 
-                                      // console.log("Rate :- ", item.type,this.state.showRate)
                                     } else if (item.type === 'GEN') {
                                       this.state.showGEN = true;
                                       this.state.showRate = false;
                                       this.state.showMcq = false;
-                                      // console.log("General ", item.type)
                                     } else {
                                       this.state.showGEN = false;
                                       this.state.showRate = false;
                                       this.state.showOption = true;
                                       this.state.showMcq = true;
-                                      // console.log("this.state.showGEN :- ", this.state.showGEN, this.state.showRate)
                                     }
 
                                     if (item.mcq != null) {
@@ -1236,9 +1137,7 @@ export default class Home extends Component {
                                     return (
                                       <React.Fragment key={i}>
                                         <View style={{flexDirection: 'row'}}>
-                                          {/* <Text style={{paddingLeft: '2%'}}>
-                                            {i + 1}.
-                                          </Text> */}
+                                       
                                           <Text
                                             style={{
                                               paddingRight: '5%',
@@ -1259,9 +1158,7 @@ export default class Home extends Component {
                                           {this.state.showMcq ? (
                                             <View
                                               style={{
-                                                // width: '10%',
                                                 marginTop: '5%',
-                                                // marginLeft: '1%',
                                               }}>
                                               <RadioGroup
                                                 radioButtons={
@@ -1284,33 +1181,13 @@ export default class Home extends Component {
                                             <View style={{marginTop: '7%'}}>
                                               {this.state.newMcqData.map(
                                                 (item, i) => {
-                                                  // { console.log("item.answer 3 :- ", item) }
-                                                  // this.state.showOption = true
                                                   {
                                                     if (
                                                       item.answer === 'item.mcq'
                                                     ) {
-                                                      // if (this.state.typ === "Rate") {
-                                                      //   this.state.showRate = true;
-                                                      //   this.state.showGEN = false;
-                                                      //   console.log("Rate :- ", this.state.typ)
-                                                      // } else if (this.state.typ === "GEN") {
-                                                      //   this.state.showGEN = true;
-                                                      //   this.state.showRate = false;
-                                                      //   console.log("General ", this.state.typ)
-                                                      // }  else if (this.state.typ === "Rate") {
-                                                      //   this.state.showRate = true;
-                                                      //   this.state.showGEN = false;
-                                                      //   console.log("Rate :- ", this.state.typ)
-                                                      // }else {
-                                                      //   this.state.showGEN = false;
-                                                      //   this.state.showRate = false;
-                                                      //   this.state.showOption = true
-                                                      //   // console.log("this.state.showGEN :- ", this.state.showGEN, this.state.showRate)
-                                                      // }
+                                                      
                                                       this.state.showOption = true;
                                                     } else {
-                                                      // console.log(this.state.typ)
                                                       this.state.showOption = false;
                                                     }
                                                   }
@@ -1459,10 +1336,6 @@ export default class Home extends Component {
                   style={{
                     paddingTop: 2,
                     paddingBottom: 5,
-                    // marginTop:"20%",
-                    // position: "absolute",
-                    // top:"99%",
-                    // backgroundColor: "#fff",
                     width: '100%',
                   }}>
                   <TouchableOpacity
@@ -1542,15 +1415,10 @@ const styles = StyleSheet.create({
   },
   activityIndicatorStyle: {
     flex: 1,
-    // position: 'absolute',
     marginLeft: 'auto',
     marginRight: 'auto',
     marginBottom: '20%',
     marginTop: '20%',
-    // left: 0,
-    // right: 0,
-    // top: 0,
-    // bottom: 0,
     justifyContent: 'center',
     width: '100%',
     height: '100%',
@@ -1562,7 +1430,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     padding: 10,
     borderRadius: 10,
-    // borderRadius: 10,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.18,
@@ -1599,7 +1466,6 @@ const styles = StyleSheet.create({
   },
 
   fdTitle: {
-    // justifyContent: 'center',
     width: '100%',
     marginTop: '5%',
     borderBottomWidth: 1,
@@ -1623,45 +1489,5 @@ const styles = StyleSheet.create({
     elevation: 100,
     backgroundColor: 'rgba(0,0,0,0.8)',
   },
-
-  showM: {
-    // marginLeft: 10,
-    // marginTop: 10,
-    // width: '40%',
-  },
-
-  popMenu: {
-    flex: 1,
-    position: 'absolute',
-    left: -10,
-    right: 0,
-    top: 0,
-    // bottom: 0,
-    backgroundColor: '#fff',
-    elevation: 10000,
-    width: '70%',
-    height: '100%',
-  },
-
-  menu: {
-    flexDirection: 'row',
-    // backgroundColor: '#AD40AF',
-    borderRadius: 5,
-    padding: 10,
-    justifyContent: 'space-between',
-    marginBottom: 10,
-  },
-
-  menuD: {
-    marginTop: '1%',
-    marginLeft: '5%',
-    fontSize: 16,
-    // color: '#fff',
-    fontWeight: 'bold',
-  },
-
-  menuI: {
-    marginLeft: '3%',
-    // color: '#fff',
-  },
+  
 });
