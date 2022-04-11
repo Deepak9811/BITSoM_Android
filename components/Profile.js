@@ -30,7 +30,7 @@ export default class Profile extends Component {
     super(props);
 
     this.state = {
-      userName: 'NaN',
+      userName: '',
       userEmail: 'NaN',
       validUpto: 'NaN',
       userData: [],
@@ -188,7 +188,7 @@ export default class Profile extends Component {
                             ? {
                                 uri: `data:${this.state.mime};base64,${this.state.image}`,
                               }
-                            : this.state.image
+                            : require('./image/cat.jpg.png')
                         }
                         style={{height: 250, width: 320}}
                       />

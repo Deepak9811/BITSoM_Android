@@ -64,7 +64,7 @@ export default function slider({navigation}) {
         })
         .catch((error, statusCode) => {
           // console.log('statusCode :', statusCode);
-          Alert.alert('Error', "There has been a problem with your fetch operation. Please try again.", [{ text: 'Okay' }], { cancelable: true });
+          Alert.alert('Error', "There has been a problem with your credentials. Please try again.", [{ text: 'Okay' }], { cancelable: true });
           navigation.goBack()
           setLoading(false)
 

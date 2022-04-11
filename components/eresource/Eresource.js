@@ -302,19 +302,6 @@ export default class Home extends Component {
 
   async getTextValue(item) {
     console.log('get item : ', item.fulltexturl, item.publisher);
-    // if (item.fulltexturl.length !== 0) {
-    //   await AsyncStorage.setItem('opacNext', JSON.stringify(item.fulltexturl));
-    //   await AsyncStorage.setItem('opacNextAuthor', JSON.stringify(item.publisher));
-    //   const da = JSON.parse(await AsyncStorage.getItem('opacNext'));
-    //   const opacNextAutho = JSON.parse(
-    //     await AsyncStorage.getItem('opacNextAuthor'),
-    //   );
-    //   console.log('data : ', da, opacNextAutho);
-    //   // console.log('mail', this.props.route.params.da);
-    //   this.props.navigation.push('OpacNext');
-    // } else {
-    //   console.log('no data');
-    // }
 
     if (item.fulltexturl.length !== 0) {
       await AsyncStorage.setItem('Booktitle', JSON.stringify(item.title));
@@ -326,15 +313,7 @@ export default class Home extends Component {
       const Booktitle = JSON.parse(await AsyncStorage.getItem('Booktitle'));
       const fullurl = JSON.parse(await AsyncStorage.getItem('fulltexturl'));
 
-      // (this.state.searchquery = item.searchQuery),
-      //   (this.state.label = item.label),
-      //   console.log('state : ', this.state.searchquery);
-
       if (Booktitle !== '' && fullurl !== '') {
-        // this.setState({
-        //   popShow: false,
-        // });
-
         this.props.navigation.navigate('OpenBook');
       } else {
         alert('Something wents wrong.');
@@ -446,7 +425,7 @@ export default class Home extends Component {
                   {this.state.showSearchBtn ? (
                     <>
                       <TouchableOpacity
-                      disabled={this.state.loaderSearch ? true :false}
+                        disabled={this.state.loaderSearch ? true : false}
                         onPress={value => this.checkbooks(value)}
                         style={{
                           borderWidth: 1,
@@ -687,13 +666,10 @@ export default class Home extends Component {
                       backgroundColor: '#fff',
                       paddingHorizontal: 5,
                     }}>
-                    Browser by publisher
+                    Browse by publisher
                   </Text>
 
                   {this.state.publisherData.map((item, i) => {
-                    // {
-                    //   console.log('item =>', item.url);
-                    // }
                     return (
                       <React.Fragment key={i}>
                         <TouchableOpacity

@@ -27,7 +27,7 @@ export default class About extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: 'NaN',
+      name: '',
       loader: false,
       purposeIndexValue: '',
       pickerIndex: '',
@@ -55,7 +55,6 @@ export default class About extends Component {
       this.setState({
         name: sName + ' ' + sNameLast,
       });
-      // console.log('name : ', this.state.name);
     } catch (error) {
       console.log('There has problem in AsyncStorage : ' + error.message);
     }
@@ -67,7 +66,6 @@ export default class About extends Component {
       this.setState({
         animation: false,
       }),
-      // this.disableBackButton(),
     );
   }
 
@@ -87,6 +85,9 @@ export default class About extends Component {
 
   async searchVisitor(value) {
     this.setState({
+      message:""
+    })
+    this.setState({
       listArray: [],
     });
 
@@ -96,9 +97,6 @@ export default class About extends Component {
       this.setState({
         searchLoader: true,
       });
-
-      // let sParameter = value;
-      // sParameter = encodeURIComponent(sParameter.trim());
 
       fetch(
         `${API_URL}LIBCON-OPAC-${this.state.bookType}&parameter=${this.state.searchMeeting}`,
@@ -124,11 +122,6 @@ export default class About extends Component {
                 });
               }
             } else {
-              // ToastAndroid.show(
-              //   resp.message,
-              //   ToastAndroid.LONG,
-              //   ToastAndroid.CENTER,
-              // );
               this.setState({
                 searchLoader: false,
                 message:
@@ -143,10 +136,6 @@ export default class About extends Component {
             ToastAndroid.LONG,
             ToastAndroid.CENTER,
           );
-          console.log(
-            'There has been a problem with your fetch operation: ' +
-              error.message,
-          );
           this.setState({
             searchLoader: false,
           });
@@ -155,7 +144,7 @@ export default class About extends Component {
       this.setState({
         showSearchContent: false,
       });
-      Alert.alert('', 'Please enter search text.', [{text: 'Okay'}], {
+      Alert.alert('Alert!', 'Please enter search text.', [{text: 'Okay'}], {
         cancelable: true,
       });
     }
@@ -171,7 +160,6 @@ export default class About extends Component {
         await AsyncStorage.getItem('opacNextAuthor'),
       );
       console.log('data : ', da, opacNextAutho);
-      // console.log('mail', this.props.route.params.da);
       this.props.navigation.push('OpacNext');
     } else {
       console.log('no data');
@@ -196,11 +184,8 @@ export default class About extends Component {
 
   render() {
     return (
-      <Animatable.View
-        style={styles.container}
-        // animation={this.state.animation ? 'fadeInRight' : 'fadeOutRight'}
-        >
-          <StatusBar backgroundColor={"#fff"} barStyle="dark-content"/>
+      <View style={styles.container}>
+        <StatusBar backgroundColor={'#fff'} barStyle="dark-content" />
         <Appbar.Header style={styles.ttl}>
           <TouchableOpacity
             style={{paddingLeft: '2%'}}
@@ -216,20 +201,6 @@ export default class About extends Component {
             <ActivityIndicator color="#57A3FF" size="large" />
           </View>
         )}
-
-        {/* {this.state.searchLoader && (
-          <View
-            style={{
-              flex: 1,
-              width: '100%',
-              position: 'absolute',
-              elevation: 3,
-              top: '45.5%',
-              justifyContent: 'center',
-            }}>
-            <ActivityIndicator size="large" color="#0d6efd" />
-          </View>
-        )} */}
 
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={{margin: 10, marginLeft: '5%', marginRight: '5%'}}>
@@ -281,7 +252,9 @@ export default class About extends Component {
             </View>
 
             <View style={{marginTop: '5%'}}>
-              <TouchableOpacity onPress={value => this.checkCatalog(value)} disabled={this.state.searchLoader ? true:false}>
+              <TouchableOpacity
+                onPress={value => this.checkCatalog(value)}
+                disabled={this.state.searchLoader ? true : false}>
                 <LinearGradient
                   colors={['#f68823', '#b03024']}
                   style={styles.signIn}>
@@ -323,14 +296,11 @@ export default class About extends Component {
                         }}>
                         {this.state.listArray.map((item, i) => {
                           {
-                            // console.log('item =>', item[2]);
                             if (item[2] === null) {
                               this.state.showitem = false;
 
-                              // console.log("empty",this.state.showitem)
                             } else {
                               this.state.showitem = true;
-                              // console.log("data",this.state.showitem)
                             }
                           }
                           return (
@@ -430,10 +400,6 @@ export default class About extends Component {
           style={{
             paddingHorizontal: 5,
             paddingVertical: 5,
-            // marginTop: '38%',
-            // position: "absolute",
-            // left: "30%",
-            // top: "93%"
           }}>
           <TouchableOpacity
             onPress={() => Linking.openURL('https://libcon.in/')}
@@ -446,7 +412,7 @@ export default class About extends Component {
             <Text style={{color: '#f68823'}}> LIBCON</Text>
           </TouchableOpacity>
         </View>
-      </Animatable.View>
+      </View>
     );
   }
 }
@@ -490,7 +456,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderRadius: 5,
-    // borderWidth: 1,
   },
   signIn: {
     width: '100%',
@@ -545,18 +510,17 @@ const styles = StyleSheet.create({
   },
 
   uDetail: {
-    // marginTop: 10,
     marginBottom: 10,
   },
   uNme: {
     fontSize: 25,
   },
-  commonGradient:{
+  commonGradient: {
     borderRadius: 10,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.18,
     shadowRadius: 1.0,
     elevation: 1,
-  }
+  },
 });

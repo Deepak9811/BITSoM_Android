@@ -14,7 +14,7 @@ import {
   ActivityIndicator,
   ImageBackground,
   TextInput,
-  ToastAndroid
+  ToastAndroid,
 } from 'react-native';
 
 import {Appbar} from 'react-native-paper';
@@ -35,7 +35,10 @@ import RadioGroup from 'react-native-radio-buttons-group';
 import StarRating from 'react-native-star-rating';
 import RNExitApp from 'react-native-exit-app';
 
+import RenderHtml from 'react-native-render-html';
+
 import Entypo from 'react-native-vector-icons/Entypo';
+import {windowWidth} from './utils/Dimensions';
 
 export default class Home extends Component {
   constructor(props) {
@@ -68,6 +71,8 @@ export default class Home extends Component {
       hideFeedBack: true,
       showSideMenu: false,
       upNdDownI: false,
+      newsData: [],
+      shownews: false,
     };
   }
   async componentDidMount() {
@@ -92,6 +97,39 @@ export default class Home extends Component {
     this.getQuote();
     this.getEventDetails();
     this.getFeedQnA();
+    this.getNewsData();
+  }
+
+  getNewsData() {
+    console.log('hello');
+    fetch(`http://bitsomapi.libcon.in/api/getNews`, {
+      method: 'GET',
+      headers: {
+        Accepts: 'application/json',
+        'content-type': 'application/json',
+      },
+    })
+      .then(result => {
+        result.json().then(resp => {
+          console.log('resp event details :- ', resp);
+          if (resp.status === 'success') {
+            this.setState({
+              newsData: resp.data,
+              shownews: true,
+            });
+          } else {
+            this.setState({
+              shownews: false,
+            });
+          }
+        });
+      })
+      .catch(error => {
+        console.log(error.message);
+        this.setState({
+          shownews: false,
+        });
+      });
   }
 
   getEventDetails() {
@@ -319,6 +357,9 @@ export default class Home extends Component {
     console.log(radioButtons.length);
 
     if (radioButtons.length != 0) {
+      this.setState({
+        loaderSubmit: true,
+      });
       fetch(`https://bitsomapi.libcon.in/api/feedback`, {
         method: 'POST',
         headers: {
@@ -332,11 +373,10 @@ export default class Home extends Component {
             console.log('Feedback Response resp  :- ', resp);
 
             if (resp.status === 'success') {
-             
-
               this.setState({
                 showFeedBack: false,
                 showResponse: false,
+                loaderSubmit: false,
               });
 
               setTimeout(() => {
@@ -345,27 +385,31 @@ export default class Home extends Component {
                 });
               }, 3000);
             } else {
+              this.setState({
+                loaderSubmit: false,
+              });
               ToastAndroid.show(
                 'Something went wrong. Please try again.',
                 ToastAndroid.LONG,
                 ToastAndroid.CENTER,
               );
-              
             }
           });
         })
         .catch(error => {
+          this.setState({
+            loaderSubmit: false,
+          });
           Alert.alert(
             'Error!',
             'Something went wrong. Please try again.',
             [{text: 'Okay'}],
             {cancelable: true},
           );
-          
         });
     } else {
       Alert.alert(
-        '',
+        'Alert!',
         'Please select the atlest one option...',
         [{text: 'Okay'}],
         {cancelable: true},
@@ -543,13 +587,13 @@ export default class Home extends Component {
   //   );
   // }
 
-  componentWillUnmount() {
-    BackHandler.removeEventListener(
-      'hardwareBackPress',
-      RNExitApp.exitApp()
-      // this.disableBackButton(),
-    );
-  }
+  // componentWillUnmount() {
+  //   BackHandler.removeEventListener(
+  //     'hardwareBackPress',
+  //     RNExitApp.exitApp(),
+  //     // this.disableBackButton(),
+  //   );
+  // }
 
   disableBackButton() {
     BackHandler.exitApp();
@@ -595,9 +639,13 @@ export default class Home extends Component {
               <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={{marginBottom: '10%'}}>
                   <View style={styles.uDetail}>
-                    <View style={{flexDirection: 'row',justifyContent:"space-between"}}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                      }}>
                       <Text
-                        style={[styles.uNme, { color: '#fff',width:"80%"}]}>
+                        style={[styles.uNme, {color: '#fff', width: '80%'}]}>
                         Hello
                       </Text>
 
@@ -622,10 +670,13 @@ export default class Home extends Component {
                             name="logout"
                             color="#fff"
                             size={15}
-                            style={{marginLeft: 5, marginTop: 3,marginRight:10}}
+                            style={{
+                              marginLeft: 5,
+                              marginTop: 3,
+                              marginRight: 10,
+                            }}
                           />
                         </View>
-
                       </TouchableOpacity>
                     </View>
                     <Text style={styles.uNme}>{this.state.name}</Text>
@@ -633,7 +684,6 @@ export default class Home extends Component {
                       Welcome to Learning Resource Center, BITSoM
                     </Text>
                   </View>
-
 
                   {/* ---------PROFILE */}
                   <View style={{flexDirection: 'row'}}>
@@ -661,11 +711,9 @@ export default class Home extends Component {
                                 paddingTop: 10,
                                 paddingBottom: 10,
                               }}>
-                              <Text style={{color: '#717171'}}>
-                              Your
-                              </Text>
-                              <Text style={{color: '#717171',paddingTop:1}}>
-                              Profile
+                              <Text style={{color: '#717171'}}>Your</Text>
+                              <Text style={{color: '#717171', paddingTop: 1}}>
+                                Profile
                               </Text>
                             </View>
                           </View>
@@ -700,12 +748,8 @@ export default class Home extends Component {
                                 paddingTop: 10,
                                 paddingBottom: 10,
                               }}>
-                              <Text style={{color: '#717171'}}>
-                              Your
-                              </Text>
-                              <Text style={{color: '#717171'}}>
-                              Account
-                              </Text>
+                              <Text style={{color: '#717171'}}>Your</Text>
+                              <Text style={{color: '#717171'}}>Account</Text>
                             </View>
                           </View>
                         </LinearGradient>
@@ -716,8 +760,7 @@ export default class Home extends Component {
                     <View style={{width: '31%', marginLeft: 10, marginTop: 10}}>
                       <TouchableOpacity
                         style={styles.bxShoadow}
-                        onPress={() => this.props.navigation.push('About')}
-                        >
+                        onPress={() => this.props.navigation.push('About')}>
                         <LinearGradient
                           colors={['#F3F3F3', '#F3F3F3']}
                           style={styles.commonGradient}>
@@ -742,9 +785,7 @@ export default class Home extends Component {
                                 paddingTop: 10,
                                 paddingBottom: 10,
                               }}>
-                              <Text style={{color: '#717171'}}>
-                                More About
-                              </Text>
+                              <Text style={{color: '#717171'}}>More About</Text>
                               <Text style={{color: '#717171'}}>
                                 The Library
                               </Text>
@@ -818,7 +859,7 @@ export default class Home extends Component {
                                 size={28}
                               />
                             </View>
-                            
+
                             <View
                               style={{
                                 justifyContent: 'center',
@@ -827,7 +868,7 @@ export default class Home extends Component {
                                 marginBottom: 10,
                               }}>
                               <Text style={{color: '#717171'}}>
-                              E-Resources
+                                E-Resources
                               </Text>
 
                               <Text style={{color: '#717171'}}></Text>
@@ -866,13 +907,9 @@ export default class Home extends Component {
                                 marginTop: 14,
                                 marginBottom: 11,
                               }}>
-                              <Text style={{color: '#717171'}}>
-                              Contact
-                              </Text>
+                              <Text style={{color: '#717171'}}>Contact</Text>
                               <Text style={{color: '#717171'}}>US</Text>
                             </View>
-
-                            
                           </View>
                         </LinearGradient>
                       </TouchableOpacity>
@@ -977,7 +1014,10 @@ export default class Home extends Component {
                                             borderRadius: 50,
                                           }}
                                           source={{
-                                            uri: item.image !== '' ? item.image : undefined,
+                                            uri:
+                                              item.image !== ''
+                                                ? item.image
+                                                : undefined,
                                           }}
                                         />
                                       </View>
@@ -991,7 +1031,94 @@ export default class Home extends Component {
                       </View>
                     )}
 
+                    {/* ------------------NewsAndNotices----------------------------- */}
 
+                    {this.state.shownews ? (
+                      <View style={{marginBottom: '20%'}}>
+                        <View
+                          style={{
+                            borderBottomWidth: 1,
+                            borderBottomColor: '#fff',
+                          }}></View>
+
+                        <View style={{marginBottom: '5%', marginTop: '10%'}}>
+                          <Text>News And Notices</Text>
+                        </View>
+
+                        <View
+                          style={{
+                            borderWidth: 1,
+                            borderColor: '#fff',
+                            padding: 5,
+                            borderRadius: 10,
+                            paddingTop: 20,
+                          }}>
+                          {this.state.newsData.map((item, i) => {
+                            if (item.image !== '') {
+                              console.log('item image :- ', item.image);
+                              this.state.showNewsImage = true;
+                            } else {
+                              this.state.showNewsImage = false;
+                            }
+                            return (
+                              <React.Fragment key={i}>
+                                <LinearGradient
+                                  colors={['#fff', '#fff']}
+                                  style={styles.newsShd}>
+                                  <View>
+                                    <View
+                                      style={{
+                                        width: '100%',
+                                      }}>
+                                      <View style={styles.fdTitle}>
+                                        <Text
+                                          style={{
+                                            fontSize: 18,
+                                            fontWeight: 'bold',
+                                            padding: 5,
+                                          }}>
+                                          {item.heading}
+                                        </Text>
+                                      </View>
+                                    </View>
+                                    <View style={{padding: 5}}>
+                                      {/* {this.state.showNewsImage && ( */}
+                                      <View
+                                        style={{
+                                          justifyContent: 'center',
+                                          alignItems: 'center',
+                                        }}>
+                                        <Image
+                                          style={{
+                                            width: windowWidth - 70,
+                                            height: 250,
+                                            display: this.state.showNewsImage
+                                              ? 'flex'
+                                              : 'none',
+                                          }}
+                                          source={{
+                                            uri:
+                                              `${item.image}` +
+                                              '?' +
+                                              new Date(),
+                                          }}
+                                        />
+                                      </View>
+                                      {/* )} */}
+
+                                      <RenderHtml
+                                        contentWidth={{width: 100}}
+                                        source={{html: item.description}}
+                                      />
+                                    </View>
+                                  </View>
+                                </LinearGradient>
+                              </React.Fragment>
+                            );
+                          })}
+                        </View>
+                      </View>
+                    ) : null}
 
                     {/* ------------------Quote----------------------------- */}
 
@@ -1012,8 +1139,6 @@ export default class Home extends Component {
                         </View>
                       </View>
                     ) : null}
-
-
 
                     {/* --------------------FeedBack------------------------------- */}
                     {/* {this.state.showEvents && ( */}
@@ -1044,14 +1169,10 @@ export default class Home extends Component {
                                   <View
                                     style={{
                                       width: '100%',
-                                    
                                     }}>
                                     <View style={styles.fdTitle}>
-                                      <Text style={styles.txtfd}>
-                                        Feedback
-                                      </Text>
+                                      <Text style={styles.txtfd}>Feedback</Text>
                                     </View>
-
                                   </View>
                                 ) : (
                                   <View
@@ -1101,7 +1222,6 @@ export default class Home extends Component {
                                       this.state.showRate = true;
                                       this.state.showGEN = false;
                                       this.state.showMcq = false;
-
                                     } else if (item.type === 'GEN') {
                                       this.state.showGEN = true;
                                       this.state.showRate = false;
@@ -1137,7 +1257,6 @@ export default class Home extends Component {
                                     return (
                                       <React.Fragment key={i}>
                                         <View style={{flexDirection: 'row'}}>
-                                       
                                           <Text
                                             style={{
                                               paddingRight: '5%',
@@ -1185,7 +1304,6 @@ export default class Home extends Component {
                                                     if (
                                                       item.answer === 'item.mcq'
                                                     ) {
-                                                      
                                                       this.state.showOption = true;
                                                     } else {
                                                       this.state.showOption = false;
@@ -1206,8 +1324,7 @@ export default class Home extends Component {
                                                                   '2%',
                                                                 marginLeft:
                                                                   '2%',
-                                                                marginBottom:
-                                                                  15,
+                                                                marginBottom: 15,
                                                               }}>
                                                               <Text
                                                                 style={[
@@ -1302,20 +1419,27 @@ export default class Home extends Component {
                                   })}
 
                                   <TouchableOpacity
-                                    style={[styles.button,{marginTop:30}]}
+                                    style={[styles.button, {marginTop: 30}]}
                                     onPress={() => this.postFeedBack()}>
                                     <LinearGradient
                                       colors={['#f68823', '#b03024']}
                                       style={styles.signIn}>
-                                      <Text
-                                        style={[
-                                          styles.textSign,
-                                          {
-                                            color: '#fff',
-                                          },
-                                        ]}>
-                                        Submit
-                                      </Text>
+                                      {this.state.loaderSubmit ? (
+                                        <ActivityIndicator
+                                          color="#fff"
+                                          size="large"
+                                        />
+                                      ) : (
+                                        <Text
+                                          style={[
+                                            styles.textSign,
+                                            {
+                                              color: '#fff',
+                                            },
+                                          ]}>
+                                          Submit
+                                        </Text>
+                                      )}
                                     </LinearGradient>
                                   </TouchableOpacity>
                                 </View>
@@ -1327,8 +1451,6 @@ export default class Home extends Component {
                     ) : null}
 
                     {/* )} */}
-
-                    
                   </View>
                 </View>
 
@@ -1443,7 +1565,7 @@ const styles = StyleSheet.create({
     borderColor: '#D8D8D8',
     borderWidth: 1,
     padding: 5,
-    width: '90%',
+    width: '93%',
     borderRadius: 5,
     marginBottom: '5%',
   },
@@ -1489,5 +1611,16 @@ const styles = StyleSheet.create({
     elevation: 100,
     backgroundColor: 'rgba(0,0,0,0.8)',
   },
-  
+  newsShd: {
+    // marginTop: '3%',
+    marginBottom: '3%',
+    borderRadius: 8,
+    padding: 5,
+    width: '100%',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.18,
+    shadowRadius: 1.0,
+    elevation: 1,
+  },
 });

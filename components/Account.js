@@ -17,7 +17,6 @@ import Feather from 'react-native-vector-icons/Feather';
 
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import LinearGradient from 'react-native-linear-gradient';
-// import * as Animatable from 'react-native-animatable';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {API_URL} from '@env';
@@ -27,7 +26,7 @@ export default class Account extends Component {
     super(props);
 
     this.state = {
-      userName: 'NaN',
+      userName: '',
       validUpto: 'NaN',
       userData: [],
       userMemberShip: 'NaN',
@@ -58,8 +57,6 @@ export default class Account extends Component {
         email: email,
       });
       this.userDetails();
-      // this.currentIssuedBook();
-      // this.oldIssuedBook();
       console.log('email : ', this.state.name);
     } catch (error) {
       console.log('There has problem in AsyncStorage : ' + error.message);
@@ -88,7 +85,6 @@ export default class Account extends Component {
             // loader: false,
           });
 
-          //   console.log(this.state.validFrom);
         });
       })
       .catch(error => {
@@ -98,7 +94,6 @@ export default class Account extends Component {
           showpage: false,
           message: 'Something went wrong. Please try again.',
         });
-        // Alert.alert('Error', error, [{ text: 'Okay' }],{cancelable:true});
       });
   }
 
@@ -113,7 +108,6 @@ export default class Account extends Component {
     })
       .then(result => {
         result.json().then(resp => {
-          // console.log('resp current book : ', resp);
           if (resp.status === 'success') {
             if (resp.data.response.length > 0) {
               this.setState({
@@ -147,14 +141,10 @@ export default class Account extends Component {
     })
       .then(result => {
         result.json().then(resp => {
-          // console.log('oldIssuedBook : ', resp.data.response);
-
           if (resp.status === 'success') {
             if (resp.data.response.length > 0) {
               this.setState({
                 oldIssued: resp.data.response,
-
-                // loader: false,
               });
             }
           } else {
@@ -424,7 +414,7 @@ export default class Account extends Component {
                                                 width: '100%',
                                                 marginTop: 5,
                                               }}>
-                                              {item[3]}
+                                              {item[2]}
                                             </Text>
                                           </Text>
                                         </View>

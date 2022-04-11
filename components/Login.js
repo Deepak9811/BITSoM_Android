@@ -237,7 +237,6 @@ export default class Login extends Component {
 
               {/* <Text style={{margin: '5%'}}>email : {this.state.email}</Text>
               <Text style={{margin: '5%'}}>name : {this.state.name}</Text>
-
               <Image
                 style={{width: 320, height: 300}}
                 source={{uri: this.state.image}}

@@ -20,21 +20,6 @@ export default class EventDetails extends Component {
 
     componentDidMount() {
         const eventDeails = this.props.route.params.eventDetails
-
-        // if (eventDeails.description.length != 0) {
-        //     // this.state.eventDeails = eventDeails
-        //     // this.state.image = eventDeails.image
-        //     // this.state.eventDetails = eventDeails.eventDetails
-        //     // console.log("events details :- ", eventDeails)
-
-        //     this.setState({
-        //         eventDeail: eventDeails,
-        //         image: eventDeails.image,
-        //         eventDetails: eventDeails.eventDetails,
-        //     })
-        // }
-
-
         console.log("events details :- ", eventDeails)
     }
 

@@ -8,7 +8,6 @@ import {
   Linking,
   ScrollView,
   Alert,
-  // TextInput,
 } from 'react-native';
 
 import {Appbar} from 'react-native-paper';
@@ -18,7 +17,6 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import {WebView} from 'react-native-webview';
 import {TextInput, Button} from 'react-native-paper';
 import * as Animatable from 'react-native-animatable';
 import Feather from 'react-native-vector-icons/Feather';
@@ -48,9 +46,9 @@ const Contact = () => {
   const handleEmail = () => {
     if (description !== '') {
       setloader(true);
-      let receiverEmail = "Library.helpdesk@bitsom.edu.in"
-      let enquiry= 'BITSoM Applicatin Contact Enquiry'
-      let url = `https://bitsomapi.libcon.in/api/sendEmail?toId=theartistnw@gmail.com&subject=${enquiry}&bodyText=${description}`;
+      let receiverEmail = 'Library.helpdesk@bitsom.edu.in';
+      let enquiry = 'BITSoM Applicatin Contact Enquiry';
+      let url = `https://bitsomapi.libcon.in/api/sendEmail?toId=library.helpdesk@bitsom.edu.in&subject=${enquiry}&bodyText=${description}`;
       fetch(url, {
         method: 'POST',
         headers: {
@@ -65,6 +63,7 @@ const Contact = () => {
               setdescription('Thank you');
               setshowThank(false);
               setloader(false);
+              setresponseMsg('Thank you.')
 
               setTimeout(() => {
                 sethideThnk(false);
@@ -74,6 +73,10 @@ const Contact = () => {
               setloader(false);
               setshowError(false);
               setresponseMsg('Something went wrong. Please try again.');
+              setTimeout(() => {
+                setshowThank(true);
+                setshowError(true);
+              }, 4000);
             }
           });
         })
@@ -82,6 +85,10 @@ const Contact = () => {
           setloader(false);
           setshowError(false);
           setresponseMsg('Something went wrong. Please try again.');
+          setTimeout(() => {
+            setshowThank(true);
+            setshowError(true);
+          }, 4000);
         });
     } else {
       Alert.alert('Alert!', 'Please Fill The Field Below.', [{text: 'Okay'}], {
@@ -114,9 +121,6 @@ const Contact = () => {
                 Welcome to Learning Resource Center, BITSoM
               </Text>
 
-              {/* <Text style={{marginTop: 10, color: '#8A8A8A'}}>
-              Given below is the contact information for your library.
-            </Text> */}
             </View>
 
             <View style={styles.info}>
@@ -151,7 +155,9 @@ const Contact = () => {
                     <View style={styles.buttonMap}>
                       {loader ? (
                         <>
-                          <TouchableOpacity style={styles.buttonStyle}>
+                          <TouchableOpacity
+                            style={styles.buttonStyle}
+                            disabled={loader ? true : false}>
                             <ActivityIndicator color="#57A3FF" size="large" />
                           </TouchableOpacity>
                         </>
@@ -198,50 +204,6 @@ const Contact = () => {
                 )}
               </>
             )}
-
-            {/* <View
-            style={{
-              width: '100%',
-              height: '100%',
-              marginBottom: 300,
-              marginTop: 20,
-            }}>
-            <WebView
-              setSupportMultipleWindows={true}
-              source={{
-                uri: `https://docs.google.com/forms/d/e/1FAIpQLSelAGnCe27x9myZCCpMfEOYB_BqLgi7_YeZ9PgkVLQpGr4YOw/viewform?fbzx=5452600519703962225`,
-              }}
-              javaScriptEnabled={true}
-              domStorageEnabled={true}
-              setJavaScriptCanOpenWindowsAutomatically={true}
-              thirdPartyCookiesEnabled={true}
-              injectedJavaScript={INJECTED_JAVASCRIPT}
-              onMessage={onMessage}
-              ref={r => (this.webref = r)}
-              onNavigationStateChange={this.getnextUrl}
-              onLoadStart={() =>
-                this.setState({
-                  loader: true,
-                })
-              }
-              onLoadEnd={() =>
-                this.setState({
-                  loader: false,
-                })
-              }
-            />
-          </View> */}
-
-            {/* <View style={styles.buttonMap}>
-            <TouchableOpacity
-              style={styles.buttonStyle}
-              // onPress={() =>
-              //   Linking.openURL('https://goo.gl/maps/C9wFHaEwwDAMGCaq8')
-              // }
-              onPress={this.handleEmail}>
-              <Text style={{fontSize: 16, color: '#252a60'}}>Send</Text>
-            </TouchableOpacity>
-          </View> */}
           </View>
         </ScrollView>
       </>
@@ -267,15 +229,6 @@ const Contact = () => {
 };
 
 export default Contact;
-
-const INJECTED_JAVASCRIPT = `(function() {
-  const tokenLocalStorage = window.localStorage.getItem('userId');
-  window.ReactNativeWebView.postMessage(tokenLocalStorage);
-})();`;
-
-const onMessage = (payload, async) => {
-  console.log('payload', payload);
-};
 
 const styles = StyleSheet.create({
   container: {flex: 1, backgroundColor: '#ffffff'},

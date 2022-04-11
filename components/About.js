@@ -14,10 +14,8 @@ import {WebView} from 'react-native-webview';
 
 import {Appbar} from 'react-native-paper';
 import Feather from 'react-native-vector-icons/Feather';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import LinearGradient from 'react-native-linear-gradient';
-// import * as Animatable from 'react-native-animatable';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -194,7 +192,6 @@ export default class About extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: this.state.showError ? '#fff' : 'red',
   },
   activityIndicatorStyle: {
     flex: 1,
@@ -209,7 +206,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: '100%',
     height: '100%',
-    // elevation: 3,
   },
   ttl: {
     backgroundColor: '#fff',
@@ -236,7 +232,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: 20,
     textAlign:"left",
-    // width:"80%"
   },
   rightIcon: {
     marginTop: 4,
