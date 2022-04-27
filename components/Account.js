@@ -20,6 +20,7 @@ import LinearGradient from 'react-native-linear-gradient';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {API_URL} from '@env';
+import RenderHtml from 'react-native-render-html';
 
 export default class Account extends Component {
   constructor(props) {
@@ -46,6 +47,7 @@ export default class Account extends Component {
 
   async componentDidMount() {
     try {
+      console.log('account data :- ', this.props.route.params.accountData);
       const email = JSON.parse(await AsyncStorage.getItem('email'));
       const userId = JSON.parse(await AsyncStorage.getItem('userId'));
       const sName = JSON.parse(await AsyncStorage.getItem('sName'));
@@ -184,7 +186,10 @@ export default class Account extends Component {
   }
 
   showCBook() {
-    this.setState({showCurrentBook: true});
+    this.setState((prevState)=>({
+      showCurrentBook: !prevState.showCurrentBook
+    }))
+    // this.setState({showCurrentBook: true});
   }
 
   HideCBook() {
@@ -192,7 +197,10 @@ export default class Account extends Component {
   }
 
   showOldBooks() {
-    this.setState({showOldBook: true});
+    this.setState((prevState)=>({
+      showOldBook: !prevState.showOldBook
+    }))
+    // this.setState({showOldBook: true});
   }
 
   HideOldBook() {
@@ -224,9 +232,15 @@ export default class Account extends Component {
                     <View style={styles.uDetail}>
                       <Text style={styles.uNme}>Hello</Text>
                       <Text style={styles.uNme}>{this.state.userName}</Text>
-                      <Text style={{marginTop: 10, color: '#8A8A8A'}}>
+                      {/* <Text style={{marginTop: 10, color: '#8A8A8A'}}>
                         Welcome to Learning Resource Center, BITSoM
-                      </Text>
+                      </Text> */}
+                      <RenderHtml
+                        contentWidth={{width: 100}}
+                        source={{
+                          html: `${this.props.route.params.accountData}`,
+                        }}
+                      />
                     </View>
 
                     {/* ================Membership id====================== */}

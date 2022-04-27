@@ -469,12 +469,12 @@ const styles = StyleSheet.create({
   commonGradient: {
     width: '100%',
     justifyContent: 'center',
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.18,
-    shadowRadius: 1.0,
-    elevation: 1,
+    // borderRadius: 10,
+    // shadowColor: '#000',
+    // shadowOffset: {width: 0, height: 1},
+    // shadowOpacity: 0.18,
+    // shadowRadius: 1.0,
+    // elevation: 1,
   },
 
   rightIcon: {
@@ -489,6 +489,12 @@ const styles = StyleSheet.create({
   button: {
     alignItems: 'center',
     marginTop: 13,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.18,
+    shadowRadius: 1.0,
+    elevation: 1,
   },
   textCommon: {
     fontSize: 16,

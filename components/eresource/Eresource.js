@@ -47,17 +47,22 @@ export default class Home extends Component {
       loaderSearch: false,
       showSearchBtn: true,
       showError: false,
-      name: 'NaN',
+      name: '',
+      pageDetails:''
     };
   }
 
   async componentDidMount() {
+
+    
     try {
       const sName = JSON.parse(await AsyncStorage.getItem('sName'));
       const sNameLast = JSON.parse(await AsyncStorage.getItem('sNameLast'));
 
+
       this.setState({
         name: sName + ' ' + sNameLast,
+        pageDetails:this.props.route.params.eresourceData
       });
       // console.log('name : ', this.state.name);
     } catch (error) {
@@ -77,6 +82,7 @@ export default class Home extends Component {
       },
     })
       .then(result => {
+        console.log("result :- ",result)
         result.json().then(resp => {
           // console.log('get Api  Response : ', resp.data[0].Endpoint);
           if (resp.status === 'success') {
@@ -97,7 +103,7 @@ export default class Home extends Component {
         this.setState({
           loader: false,
         });
-        Alert.alert('Error', error.message, [{text: 'Okay'}], {
+        Alert.alert('Error!', error.message, [{text: 'Okay'}], {
           cancelable: true,
         });
       });
@@ -126,7 +132,7 @@ export default class Home extends Component {
       .catch((error, statusCode) => {
         console.log('statusCode :', statusCode);
         // alert("Something went wrong. Please try again.")
-        Alert.alert('Error', error.message, [{text: 'Okay'}], {
+        Alert.alert('Error', "There has been a problem. Please try again.", [{text: 'Okay'}], {
           cancelable: true,
         });
 
@@ -230,6 +236,7 @@ export default class Home extends Component {
           searchField: 'title',
           startPage: 0,
           userEmail: email,
+        // userEmail: "vijender.pandita@celect.in",
           searchType: 'fieldSearch',
         }),
         path = `${this.state.searchBk}`;
@@ -371,9 +378,12 @@ export default class Home extends Component {
               <View style={styles.uDetail}>
                 <Text style={styles.uNme}>Hello</Text>
                 <Text style={styles.uNme}>{this.state.name}</Text>
-                <Text style={{marginTop: 10, color: '#8A8A8A'}}>
-                  Welcome to Learning Resource Center, BITSoM
-                </Text>
+                <RenderHtml
+                contentWidth={{width: 100}}
+                source={{
+                  html: `${this.state.pageDetails}`,
+                }}
+              />
               </View>
 
               <Text
@@ -404,6 +414,7 @@ export default class Home extends Component {
                     placeholder="Enter text here..."
                     style={styles.searchInputStyle}
                     value={this.state.searchBook}
+                    placeholderTextColor={"#7F7F7F"}
                     onChangeText={value => {
                       this.setState({searchBook: value});
                     }}
@@ -524,26 +535,32 @@ export default class Home extends Component {
                               <React.Fragment key={i}>
                                 <TouchableOpacity
                                   value={this.state.mName}
+                                  style={{
+                                    // paddingTop: 10,
+                                    // paddingBottom: 10,
+                                    marginBottom: 10,
+                                    borderRadius: 10,
+                                    shadowColor: '#000',
+                                    shadowOffset: {width: 0, height: 1},
+                                    shadowOpacity: 0.18,
+                                    shadowRadius: 1.0,
+                                    elevation: 1,
+                                  }}
                                   onPress={() => this.getTextValue(item)}>
                                   <View
                                     style={{
-                                      marginBottom: 10,
-                                      borderRadius: 5,
+                                      // marginBottom: 10,
+                                      borderRadius: 10,
                                     }}>
                                     <LinearGradient
                                       colors={['#fff', '#fff']}
-                                      style={{
-                                        paddingTop: 10,
-                                        paddingBottom: 10,
-                                        borderRadius: 10,
-                                        shadowColor: '#000',
-                                        shadowOffset: {width: 0, height: 1},
-                                        shadowOpacity: 0.18,
-                                        shadowRadius: 1.0,
-                                        elevation: 1,
-                                      }}>
+                                      style={{borderRadius: 10,paddingTop: 10,
+                                        paddingBottom: 10,}}
+                                      >
                                       <View
                                         style={{
+                                          
+                                          borderRadius: 10,
                                           paddingLeft: 15,
                                           paddingRight: 5,
                                           flexDirection: 'row',
@@ -754,17 +771,18 @@ const styles = StyleSheet.create({
   button: {
     alignItems: 'center',
     marginTop: 13,
-  },
-  commonGradient: {
-    width: '100%',
-    height: 50,
-    justifyContent: 'center',
     borderRadius: 10,
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.18,
     shadowRadius: 1.0,
     elevation: 1,
+  },
+  commonGradient: {
+    width: '100%',
+    height: 50,
+    justifyContent: 'center',
+    
   },
   textCommon: {
     fontSize: 16,

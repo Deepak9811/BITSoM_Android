@@ -22,6 +22,7 @@ import {Picker as SelectPicker} from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {API_URL} from '@env';
+import RenderHtml from 'react-native-render-html';
 
 export default class About extends Component {
   constructor(props) {
@@ -85,8 +86,8 @@ export default class About extends Component {
 
   async searchVisitor(value) {
     this.setState({
-      message:""
-    })
+      message: '',
+    });
     this.setState({
       listArray: [],
     });
@@ -208,9 +209,15 @@ export default class About extends Component {
             <View style={styles.uDetail}>
               <Text style={styles.uNme}>Hello</Text>
               <Text style={styles.uNme}>{this.state.name}</Text>
-              <Text style={{marginTop: 10, color: '#8A8A8A'}}>
+              {/* <Text style={{marginTop: 10, color: '#8A8A8A'}}>
                 Welcome to Learning Resource Center, BITSoM
-              </Text>
+              </Text> */}
+              <RenderHtml
+                contentWidth={{width: 100}}
+                source={{
+                  html: `${this.props.route.params.opacData}`,
+                }}
+              />
             </View>
 
             <Text style={{marginTop: 10, color: '#8A8A8A'}}>
@@ -244,6 +251,7 @@ export default class About extends Component {
               <TextInput
                 placeholder="Search..."
                 style={styles.searchInputStyle}
+                placeholderTextColor={'#7F7F7F'}
                 value={this.state.searchMeeting}
                 onChangeText={value => {
                   this.setState({searchMeeting: value});
@@ -298,7 +306,6 @@ export default class About extends Component {
                           {
                             if (item[2] === null) {
                               this.state.showitem = false;
-
                             } else {
                               this.state.showitem = true;
                             }
@@ -306,28 +313,25 @@ export default class About extends Component {
                           return (
                             <React.Fragment key={i}>
                               <TouchableOpacity
-                                style={styles.searchTextSyle}
+                                style={styles.commonGradient}
                                 value={this.state.mName}
                                 onPress={() => this.getTextValue(item)}>
                                 <View
                                   style={{
-                                    marginBottom: 10,
-                                    borderRadius: 5,
+                                    borderRadius: 10,
                                   }}>
                                   <LinearGradient
                                     colors={['#fff', '#fff']}
-                                    style={[
-                                      styles.commonGradient,
-                                      {
-                                        paddingTop: 10,
-                                        paddingBottom: 10,
-                                        borderRadius: 10,
-                                      },
-                                    ]}>
+                                    style={{
+                                      borderRadius: 10,
+                                      paddingBottom: 10,
+                                    }}>
                                     <View
                                       style={{
                                         paddingLeft: 15,
                                         paddingRight: 5,
+                                        paddingTop: 10,
+                                        borderRadius: 10,
                                       }}>
                                       <Text style={styles.bookTitle}>
                                         {item[1]}
@@ -522,5 +526,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.18,
     shadowRadius: 1.0,
     elevation: 1,
+    marginBottom: 10,
   },
 });

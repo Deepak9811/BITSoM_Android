@@ -19,6 +19,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import LinearGradient from 'react-native-linear-gradient';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { windowWidth } from './utils/Dimensions';
 
 export default class About extends Component {
   constructor(props) {
@@ -224,7 +225,7 @@ export default class About extends Component {
                       style={styles.commonGradient}>
                       <View style={[styles.contentRow]}>
                         <TouchableOpacity
-                          style={{width: '80%', justifyContent: 'center'}}
+                          style={{width: windowWidth / 1.3, justifyContent: 'center',paddingVertical: 10,}}
                           onPress={() => this.getDetailsAbout(item)}>
                           <Text style={[styles.textCommon, {color: '#e1495e'}]}>
                             {item.heading.trim()}
@@ -282,7 +283,7 @@ export default class About extends Component {
                                     onPress={() => this.getDetailsAbout(subItem)}
                                     style={[
                                       styles.contentRow,
-                                      {paddingHorizontal: 10},
+                                      {paddingHorizontal: 10,paddingVertical: 10,},
                                     ]}>
                                     <View style={{width: '80%'}}>
                                       <Text
@@ -415,6 +416,6 @@ const styles = StyleSheet.create({
   contentRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 10,
+    
   },
 });

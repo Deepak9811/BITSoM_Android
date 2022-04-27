@@ -35,6 +35,7 @@ export default function slider({navigation}) {
         searchField: labelLocal,
         startPage: 0,
         userEmail: email,
+        // userEmail: "vijender.pandita@celect.in",
       }),
         path = documentList;
 
@@ -43,10 +44,14 @@ export default function slider({navigation}) {
       })
         .fetch('POST', path, headers, body)
         .then(resp => {
+          console.log("responese 1: - ",resp.data)
           const detail = resp.data;
           const prs = JSON.parse(detail);
+          // console.log("responese 2: - ",prs.reponse.responseMessage)
 
-          setPosts(prs.refreadDocumentList);
+          if(prs.data !== null){
+          console.log("responese 2: - ",prs.reponse)
+            setPosts(prs.refreadDocumentList);
           setLoading(false);
 
           if (!prs.refreadDocumentList.length > 0) {
@@ -59,6 +64,10 @@ export default function slider({navigation}) {
           if(prs.refreadDocumentList.length <= 20 || prs.refreadDocumentList.length ===0){
             setshowPagiantion(false)
             console.log("check :- ", prs.refreadDocumentList);
+          }
+          }else{
+            navigation.navigate('Eresource')
+            Alert.alert("Error",prs.reponse.responseMessage,[{text:'Okay'}],{cancelable:true})
           }
 
         })

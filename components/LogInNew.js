@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import LinearGradient from 'react-native-linear-gradient';
@@ -27,6 +28,40 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import BcryptReactNative from 'bcrypt-react-native';
 import {API_URL} from '@env';
+import {windowHeight} from './utils/Dimensions';
+
+import {authorize, refresh, AuthConfiguration} from 'react-native-app-auth';
+import {AuthConfig} from './microsoft/AuthConfig';
+import moment from 'moment';
+import {GraphManager} from './microsoft/GraphManager';
+import {User} from '@microsoft/microsoft-graph-types';
+
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
+
+GoogleSignin.configure({
+  // ClientId:
+  //   '48774575517-o9j0crni6shsal3jnoerm1o19pdqkg05.apps.googleusercontent.com',
+  ClientId:
+    '842785997270-6hbv3bs7e6ifvfg35ojnov1t444rjld4.apps.googleusercontent.com',
+  // offlineAccess: true,
+  forceCodeForRefreshToken: true,
+});
+
+const config: AuthConfiguration = {
+  clientId: AuthConfig.appId,
+  redirectUrl: 'graph-tutorial://react-native-auth/',
+  scopes: AuthConfig.appScopes,
+  additionalParameters: {prompt: 'select_account'},
+  serviceConfiguration: {
+    authorizationEndpoint:
+      'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
+    tokenEndpoint: 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
+  },
+};
 
 export default class LogInNew extends Component {
   constructor(props) {
@@ -43,8 +78,55 @@ export default class LogInNew extends Component {
       loader: false,
       showPage: false,
       userData: '',
+      other_LogIN: false,
     };
   }
+
+  signIn = async () => {
+    this.setState({loader: false});
+    try {
+      console.warn('hello');
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+
+      this.setState({
+        userGoogleInfo: userInfo,
+        email: userInfo.user.email,
+        other_LogIN: true,
+        loaderGoogle: true,
+      });
+      if (this.state.email !== null) {
+        this.getUserAllData();
+      } else {
+        console.log('Email is not null....');
+      }
+
+      console.log('user name =>', userInfo.user.email);
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        // user cancelled the login flow
+        console.warn('SIGN IN CANCELLED', error.message);
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        // operation (e.g. sign in) is in progress already
+        console.warn('IN PROGRESS', error.message);
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        // play services not available or outdated
+        ToastAndroid.showWithGravity(
+          'Something went wrong. Please try to another way to Sign In.',
+          ToastAndroid.LONG,
+          ToastAndroid.CENTER,
+        );
+        console.warn('play services not available or outdated', error.message);
+      } else {
+        ToastAndroid.showWithGravity(
+          'Something went wrong. Please try again',
+          ToastAndroid.LONG,
+          ToastAndroid.CENTER,
+        );
+        console.warn('Meassage', error.message);
+      }
+    }
+  };
 
   textInputchange(val) {
     if (val.length !== 0) {
@@ -97,14 +179,22 @@ export default class LogInNew extends Component {
       Alert.alert('', 'Please enter your account details to login.');
     } else if (this.state.email !== '' && this.state.pass !== '') {
       console.log(this.state.pass);
-      this.signIn();
+      this.getUserAllData();
     } else {
       Alert.alert('', 'Please enter your correct account details to login.');
     }
   }
 
-  signIn() {
-    this.setState({loader: true});
+  getUserAllData() {
+    if (
+      this.state.loaderMicrosoft !== true ||
+      this.state.loaderGoogle !== true
+    ) {
+      this.setState({loader: true});
+    }
+    // if(this.state.loaderGoogle !== true){
+    //   this.setState({loader: true});
+    // }
     // console.log(this.state.email, this.state.pass, this.state.purposeValue);
 
     let emails = this.state.email;
@@ -118,93 +208,143 @@ export default class LogInNew extends Component {
     })
       .then(result => {
         result.json().then(async resp => {
-          // console.log("resp : ", resp.data.response[0]);
+          // console.log('resp : ', resp.data.response[0]);
           if (resp.status === 'success') {
             if (resp.length !== 0) {
-              try {
-                await AsyncStorage.setItem(
-                  'userId',
-                  JSON.stringify(resp.data.response[0][0]),
-                );
-                await AsyncStorage.setItem(
-                  'sName',
-                  JSON.stringify(resp.data.response[0][2]),
-                );
-                await AsyncStorage.setItem(
-                  'sNameLast',
-                  JSON.stringify(resp.data.response[0][3]),
-                );
-              } catch (error) {
-                console.log('try : ', error);
-              }
-
-              const sname = resp.data.response[0][4];
-              // console.log('resp : ', sname);
-
-              if (this.state.email === sname) {
+              if (this.state.other_LogIN === true) {
                 try {
-                  const salt = await BcryptReactNative.getSalt(10);
-                  const hash = (salt, resp.data.response[0][5]);
-                  const isSame = await BcryptReactNative.compareSync(
-                    this.state.pass,
-                    hash,
+                  await AsyncStorage.setItem(
+                    'userId',
+                    JSON.stringify(resp.data.response[0][0]),
+                  );
+                  await AsyncStorage.setItem(
+                    'sName',
+                    JSON.stringify(resp.data.response[0][2]),
+                  );
+                  await AsyncStorage.setItem(
+                    'sNameLast',
+                    JSON.stringify(resp.data.response[0][3]),
+                  );
+                  await AsyncStorage.setItem(
+                    'email',
+                    JSON.stringify(resp.data.response[0][4]),
                   );
 
-                  if (isSame === true) {
-                    await AsyncStorage.setItem(
-                      'email',
-                      JSON.stringify(resp.data.response[0][4]),
-                    );
-
-                    this.setState({
-                      userData: resp.data.response[0],
-                    });
-
-                    this.props.navigation.push('Home');
-                  } else {
-                    Alert.alert(
-                      '',
-                      'Please enter your correct account details to login.',
-                      [{text: 'Okay'}],
-                      {cancelable: true},
-                    );
-                    this.setState({
-                      loader: false,
-                    });
-                  }
-
                   this.setState({
-                    loader: false,
+                    userData: resp.data.response[0],
                   });
-                } catch (e) {
-                  console.log({e});
+
+                  this.props.navigation.push('Home');
+                } catch (error) {
+                  console.log('try : ', error);
                 }
               } else {
-                Alert.alert(
-                  '',
-                  'Please enter your correct account details to login.',
-                );
                 this.setState({
-                  loader: false,
+                  other_LogIN: false,
                 });
+
+                try {
+                  await AsyncStorage.setItem(
+                    'userId',
+                    JSON.stringify(resp.data.response[0][0]),
+                  );
+                  await AsyncStorage.setItem(
+                    'sName',
+                    JSON.stringify(resp.data.response[0][2]),
+                  );
+                  await AsyncStorage.setItem(
+                    'sNameLast',
+                    JSON.stringify(resp.data.response[0][3]),
+                  );
+                } catch (error) {
+                  console.log('try : ', error);
+                }
+
+                const sname = resp.data.response[0][4];
+                // console.log('resp : ', sname);
+
+                if (this.state.email === sname) {
+                  try {
+                    const salt = await BcryptReactNative.getSalt(10);
+                    const hash = (salt, resp.data.response[0][5]);
+                    const isSame = await BcryptReactNative.compareSync(
+                      this.state.pass,
+                      hash,
+                    );
+
+                    if (isSame === true) {
+                      await AsyncStorage.setItem(
+                        'email',
+                        JSON.stringify(resp.data.response[0][4]),
+                      );
+
+                      this.setState({
+                        userData: resp.data.response[0],
+                      });
+
+                      this.props.navigation.push('Home');
+                    } else {
+                      Alert.alert(
+                        '',
+                        'Please enter your correct account details to login.',
+                        [{text: 'Okay'}],
+                        {cancelable: true},
+                      );
+                      this.setState({
+                        loader: false,
+                        loaderGoogle: false,
+                      });
+                    }
+
+                    this.setState({
+                      loader: false,
+                      loaderGoogle: false,
+                    });
+                  } catch (e) {
+                    console.log({e});
+                  }
+                } else {
+                  Alert.alert(
+                    '',
+                    'Please enter your correct account details to login.',
+                  );
+                  this.setState({
+                    loader: false,
+                    loaderGoogle: false,
+                  });
+                }
               }
             }
           } else {
             this.setState({
               loader: false,
+              other_LogIN: false,
+              loaderGoogle: false,
             });
-            ToastAndroid.show(
+            Alert.alert(
+              '',
               'Please enter your correct account details to login.',
-              ToastAndroid.LONG,
-              ToastAndroid.CENTER,
+              [{text: 'Ok'}],
+              {cancelable: true},
             );
+            // ToastAndroid.show(
+            //   'Please enter your correct account details to login.',
+            //   ToastAndroid.LONG,
+            //   ToastAndroid.CENTER,
+            // );
           }
         });
       })
       .catch(error => {
-        ToastAndroid.show("There has been a problem with your fetch operation. Please try again", ToastAndroid.LONG, ToastAndroid.CENTER);
+        ToastAndroid.show(
+          'There has been a problem with your fetch operation. Please try again',
+          ToastAndroid.LONG,
+          ToastAndroid.CENTER,
+        );
         this.setState({
           loader: false,
+          loaderMicrosoft: false,
+          loaderGoogle: false,
         });
         console.log(
           'There has been a problem with your fetch operation: ' +
@@ -229,6 +369,32 @@ export default class LogInNew extends Component {
     // }, 9000);
   }
 
+  microsoftLogIn = async () => {
+    try {
+      this.setState({loaderMicrosoft: true});
+      const result = await authorize(config);
+      // console.log('result :- ', result);
+
+      await AsyncStorage.setItem('userToken', result.accessToken);
+      await AsyncStorage.setItem('refreshToken', result.refreshToken);
+      await AsyncStorage.setItem(
+        'expireTime',
+        result.accessTokenExpirationDate,
+      );
+      const user: User = await GraphManager.getUserAsync();
+      // console.log('result :- ', result);
+      this.setState({
+        email: user.userPrincipalName,
+        other_LogIN: true,
+      });
+      this.getUserAllData();
+      console.log(user.userPrincipalName);
+    } catch (error) {
+      this.setState({loaderMicrosoft: false});
+      console.log('error :- ', error);
+    }
+  };
+
   render() {
     return (
       <>
@@ -239,9 +405,10 @@ export default class LogInNew extends Component {
             <View
               style={{
                 justifyContent: 'center',
-                flex: 1,
+                // flex: 1,
                 alignItems: 'center',
                 marginTop: '10%',
+                marginBottom: '5%',
               }}>
               <Image source={require('./image/bitsom.png')} />
             </View>
@@ -286,9 +453,15 @@ export default class LogInNew extends Component {
                     <View style={styles.action}>
                       <FontAwesome name="user-o" color="#05375a" size={20} />
 
+                      <View style={{width: '86%'}}>
+
+                      
+
                       <TextInput
                         returnKeyType="next"
                         placeholder="Your Email"
+                        placeholderTextColor="#7F7F7F"
+                        keyboardType="email-address"
                         style={styles.textInput}
                         value={this.state.email}
                         onChangeText={val => {
@@ -298,12 +471,13 @@ export default class LogInNew extends Component {
                           });
                         }}
                       />
+                      </View>
                       {this.state.check_textInputChange ? (
-                        <Animatable.View animation="bounceIn">
+                        <Animatable.View animation="bounceIn" style={{alignItems:"center"}}>
                           <Feather
                             name="check-circle"
                             color="green"
-                            size={20}
+                            size={21}
                           />
                         </Animatable.View>
                       ) : null}
@@ -312,31 +486,34 @@ export default class LogInNew extends Component {
 
                   {/* ------------Password------------- */}
                   <Text style={[styles.text_footer, {marginTop: 20}]}>
-                    {' '}
-                    Password{' '}
+                    Password
                   </Text>
                   <View style={styles.action}>
                     <Feather name="lock" color="#05375a" size={20} />
 
-                    <TextInput
-                      secureTextEntry={
-                        this.state.secureTextEntry ? true : false
-                      }
-                      returnKeyType="next"
-                      placeholder="Your Password"
-                      style={styles.textInput}
-                      value={this.state.pass}
-                      onChangeText={val => {
-                        this.handlePasswordChange(val);
-                        this.setState({
-                          pass: val,
-                        });
-                      }}
-                    />
+                    <View style={{width: '85%'}}>
+                      <TextInput
+                        secureTextEntry={
+                          this.state.secureTextEntry ? true : false
+                        }
+                        placeholderTextColor="#7F7F7F"
+                        returnKeyType="next"
+                        placeholder="Your Password"
+                        style={styles.textInput}
+                        value={this.state.pass}
+                        onChangeText={val => {
+                          this.handlePasswordChange(val);
+                          this.setState({
+                            pass: val,
+                          });
+                        }}
+                      />
+                    </View>
                     <TouchableOpacity
+                    style={{alignItems:"center",}}
                       onPress={() => this.updateSecureTextEntry()}>
                       {this.state.secureTextEntry ? (
-                        <Feather name="eye-off" color="grey" size={20} />
+                        <Feather name="eye-off" color="grey" size={21} />
                       ) : (
                         <TouchableOpacity
                           onPress={() =>
@@ -344,7 +521,7 @@ export default class LogInNew extends Component {
                               secureTextEntry: true,
                             })
                           }>
-                          <Feather name="eye" color="green" size={20} />
+                          <Feather name="eye" color="green" size={21} />
                         </TouchableOpacity>
                       )}
                     </TouchableOpacity>
@@ -373,11 +550,85 @@ export default class LogInNew extends Component {
                     </LinearGradient>
                   </TouchableOpacity>
 
+                  {/* <View style={styles.orBorder}></View>
+                  <View style={styles.or}>
+                    <Text>OR</Text>
+                  </View>
+
+                  <TouchableOpacity
+                    onPress={() => this.signIn()}
+                    style={[
+                      styles.buttonContainer,
+                      {backgroundColor: '#f5e7ea'},
+                    ]}>
+                    <View style={styles.iconWrapper}>
+                      <FontAwesome
+                        style={styles.icon}
+                        name={'google'}
+                        size={22}
+                        color={'#de4d41'}
+                      />
+                    </View>
+                    <View>
+                      {!this.state.loaderGoogle ? (
+                        <View
+                          style={{
+                            marginLeft: '27%',
+                            justifyContent: 'center',
+                            marginTop: '2%',
+                          }}>
+                          <Text style={[styles.buttonText, {color: '#de4d41'}]}>
+                            Log In With Google
+                          </Text>
+                        </View>
+                      ) : (
+                        <View style={{marginLeft: '45%'}}>
+                          <ActivityIndicator size="large" color="#de4d41" />
+                        </View>
+                      )}
+                    </View>
+                  </TouchableOpacity>
+
+
+                  <TouchableOpacity
+                    onPress={() => this.microsoftLogIn()}
+                    style={[
+                      styles.buttonContainer,
+                      {
+                        backgroundColor: '#0078d4',
+                        marginTop: '5%',
+                        marginBottom: '30%',
+                      },
+                    ]}>
+                    <View style={styles.iconWrapper}>
+                      <Fontisto
+                        style={styles.icon}
+                        name={'microsoft'}
+                        size={20}
+                        color={'#fff'}
+                      />
+                    </View>
+                    <View style={[styles.btnTxtWrapper]}>
+
+                      {!this.state.loaderMicrosoft ? (
+                        <View style={{marginLeft: '19%'}}>
+                          <Text style={[styles.buttonText, {color: '#fff'}]}>
+                            Log In With Microsoft
+                          </Text>
+                        </View>
+                      ) : (
+                        <View style={{marginLeft: '-9%'}}>
+                          <ActivityIndicator size="large" color="#fff" />
+                        </View>
+                      )}
+                    </View>
+                  </TouchableOpacity> */}
+
                   <View
                     style={{
                       paddingHorizontal: 5,
                       paddingVertical: 15,
-                      marginTop: '25%',
+                      marginTop: Platform.OS === 'ios' ? 0 : windowHeight / 2.8,
                     }}>
                     <TouchableOpacity
                       onPress={() => Linking.openURL('https://libcon.in/')}
@@ -448,10 +699,56 @@ const styles = StyleSheet.create({
     height: 50,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 10,
+    borderRadius: 3,
   },
   textSign: {
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  buttonContainer: {
+    marginTop: 10,
+    width: '100%',
+    height: windowHeight / 15,
+    padding: 10,
+    flexDirection: 'row',
+    borderRadius: 3,
+
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.18,
+    shadowRadius: 1.0,
+    elevation: 1,
+  },
+  iconWrapper: {
+    width: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  icon: {
+    fontWeight: 'bold',
+  },
+
+  btnTxtWrapper: {
+    flex: 1,
+    justifyContent: 'center',
+    // alignItems: 'center',
+  },
+  buttonText: {
+    fontSize: 17,
+    fontWeight: 'bold',
+  },
+  or: {
+    position: 'relative',
+    left: '45%',
+    top: -11,
+    backgroundColor: '#fff',
+    width: '10%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  orBorder: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    marginTop: '10%',
   },
 });

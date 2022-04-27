@@ -21,9 +21,11 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import LinearGradient from 'react-native-linear-gradient';
 // import * as Animatable from 'react-native-animatable';
+import RenderHtml from 'react-native-render-html';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {API_URL} from "@env"
+import {API_URL} from '@env';
+import { windowHeight } from './utils/Dimensions';
 
 export default class Profile extends Component {
   constructor(props) {
@@ -54,6 +56,7 @@ export default class Profile extends Component {
 
   async componentDidMount() {
     try {
+      console.log('profile data :- ', this.props.route.params.profileData);
       const email = JSON.parse(await AsyncStorage.getItem('email'));
       const userId = JSON.parse(await AsyncStorage.getItem('userId'));
       const sName = JSON.parse(await AsyncStorage.getItem('sName'));
@@ -72,25 +75,23 @@ export default class Profile extends Component {
   }
 
   userDetails() {
-    console.log('email : ', this.state.email);
-    fetch(
-      `${API_URL}LIBCON-PATINFO&parameter=${this.state.email}`,
-      {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
+    // console.log('email : ', this.state.email);
+    fetch(`${API_URL}LIBCON-PATINFO&parameter=${this.state.email}`, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
-    )
+    })
       .then(result => {
         result.json().then(resp => {
-          console.log('userAddress : ', resp.data.response[0][2]);
+          // console.log('userAddress : ', resp.data.response[0][2]);
 
           if (resp.length !== 0) {
             this.setState({
               userData: resp.data.response[0],
-              userName: resp.data.response[0][2] + ' ' + resp.data.response[0][3],
+              userName:
+                resp.data.response[0][2] + ' ' + resp.data.response[0][3],
               userEmail: resp.data.response[0][4],
               userMemberShip: resp.data.response[0][1],
               validFrom: resp.data.response[0][7],
@@ -114,39 +115,37 @@ export default class Profile extends Component {
               ToastAndroid.CENTER,
             );
           }
-
         });
       })
       .catch(error => {
         this.setState({
           loader: false,
-                  });
+        });
         // Alert.alert('Error', error.message, [{text: 'Okay'}],{cancelable:true});
-        console.log(this.state.userData.length)
-        if(this.state.userData.length > 0 ){
+        console.log(this.state.userData.length);
+        if (this.state.userData.length > 0) {
           console.log('null');
-        }else{
+        } else {
           this.setState({
             message: 'Something went wrong. Please try again.',
             showpage: false,
-            loader:false
+            loader: false,
           });
         }
       });
 
-
-      setTimeout(() => {
-        console.log(this.state.userData.length)
-        if(this.state.userData.length > 0 ){
-          console.log('null');
-        }else{
-          this.setState({
-            message: 'Sorry, the requested page is not available',
-            showpage: false,
-            loader:false
-          });
-        }
-      }, 10000);
+    setTimeout(() => {
+      console.log(this.state.userData.length);
+      if (this.state.userData.length > 0) {
+        console.log('null');
+      } else {
+        this.setState({
+          message: 'Sorry, the requested page is not available',
+          showpage: false,
+          loader: false,
+        });
+      }
+    }, 10000);
   }
 
   render() {
@@ -175,9 +174,16 @@ export default class Profile extends Component {
                       <Text style={styles.uNme}>Hello</Text>
                       <Text style={styles.uNme}>{this.state.userName}</Text>
 
-                      <Text style={{marginTop: 10, color: '#8A8A8A'}}>
+                      {/* <Text style={{marginTop: 10, color: '#8A8A8A'}}>
                         Welcome to Learning Resource Center, BITSoM
-                      </Text>
+                      </Text> */}
+
+                      <RenderHtml
+                        contentWidth={{width: 100}}
+                        source={{
+                          html: `${this.props.route.params.profileData}`,
+                        }}
+                      />
                     </View>
 
                     {/* ==============IMAGE==================== */}
@@ -190,13 +196,13 @@ export default class Profile extends Component {
                               }
                             : require('./image/cat.jpg.png')
                         }
-                        style={{height: 250, width: 320}}
+                        style={[styles.shadows,{height: windowHeight/3, width: 320,borderRadius:5}]}
                       />
                     </View>
 
                     <LinearGradient
                       colors={['#f7f6ff', '#eff3fe']}
-                      style={styles.commonGradient}>
+                      style={[styles.commonGradient,styles.shadows]}>
                       <View style={{marginBottom: '4%'}}>
                         <Text style={styles.text_footer}>Username :</Text>
 
@@ -216,7 +222,7 @@ export default class Profile extends Component {
                     {/* ================Email===================== */}
                     <LinearGradient
                       colors={['#eff7ee', '#eff7ee']}
-                      style={styles.commonGradient}>
+                      style={[styles.commonGradient,styles.shadows]}>
                       <View style={{marginBottom: '4%'}}>
                         <Text style={styles.text_footer}>Email Id :</Text>
 
@@ -243,7 +249,7 @@ export default class Profile extends Component {
 
                     <LinearGradient
                       colors={['#fce5e5', '#f5ddde']}
-                      style={styles.commonGradient}>
+                      style={[styles.commonGradient,styles.shadows]}>
                       <View style={{marginBottom: '4%'}}>
                         <Text style={styles.text_footer}>Membership Id :</Text>
 
@@ -268,7 +274,7 @@ export default class Profile extends Component {
                     {/* ================Fine ===================== */}
                     <LinearGradient
                       colors={['#f7f6ff', '#eff3fe']}
-                      style={styles.commonGradient}>
+                      style={[styles.commonGradient,styles.shadows]}>
                       <View style={{marginBottom: '4%'}}>
                         <Text style={styles.text_footer}>Fine :</Text>
 
@@ -293,7 +299,7 @@ export default class Profile extends Component {
                     {/* ================Date Of Birth====================== */}
                     <LinearGradient
                       colors={['#fff6e7', '#fff6e7']}
-                      style={styles.commonGradient}>
+                      style={[styles.commonGradient,styles.shadows]}>
                       <View style={{marginBottom: '4%'}}>
                         <Text style={styles.text_footer}>Date Of Birth :</Text>
 
@@ -318,7 +324,7 @@ export default class Profile extends Component {
                     {/* ================Gender====================== */}
                     <LinearGradient
                       colors={['#f7fcff', '#f7fcff']}
-                      style={styles.commonGradient}>
+                      style={[styles.commonGradient,styles.shadows]}>
                       <View style={{marginBottom: '4%'}}>
                         <Text style={styles.text_footer}>Gender :</Text>
 
@@ -340,7 +346,7 @@ export default class Profile extends Component {
                     {/* ================Address===================== */}
                     <LinearGradient
                       colors={['#f7f6ff', '#f7f6ff']}
-                      style={styles.commonGradient}>
+                      style={[styles.commonGradient,styles.shadows]}>
                       <View style={{marginBottom: '4%'}}>
                         <Text style={styles.text_footer}>Address :</Text>
 
@@ -365,7 +371,7 @@ export default class Profile extends Component {
                     {/* ================Primary Phone====================== */}
                     <LinearGradient
                       colors={['#eff7ee', '#eff7ee']}
-                      style={styles.commonGradient}>
+                      style={[styles.commonGradient,styles.shadows]}>
                       <View style={{marginBottom: '4%'}}>
                         <Text style={styles.text_footer}>Primary Phone :</Text>
 
@@ -386,7 +392,7 @@ export default class Profile extends Component {
                     {/* ================Secondary Phone====================== */}
                     {/* <LinearGradient
                     colors={['#fce5e5', '#f5ddde']}
-                    style={styles.commonGradient}>
+                    style={[styles.commonGradient,styles.shadows]}>
                     <View style={{marginBottom: '4%'}}>
                       <Text style={styles.text_footer}>Secondary Phone :</Text>
 
@@ -408,7 +414,7 @@ export default class Profile extends Component {
                     {/* ================Valid from====================== */}
                     <LinearGradient
                       colors={['#fff6e7', '#fff6e7']}
-                      style={styles.commonGradient}>
+                      style={[styles.commonGradient,styles.shadows]}>
                       <View style={{marginBottom: '4%'}}>
                         <Text style={styles.text_footer}>Valid from :</Text>
 
@@ -433,7 +439,7 @@ export default class Profile extends Component {
                     {/* ================Valid Upto====================== */}
                     <LinearGradient
                       colors={['#f7f6ff', '#eff3fe']}
-                      style={styles.commonGradient}>
+                      style={[styles.commonGradient,styles.shadows]}>
                       <View style={{marginBottom: '4%'}}>
                         <Text style={styles.text_footer}>Valid Upto :</Text>
 
@@ -472,13 +478,16 @@ export default class Profile extends Component {
                     justifyContent: 'center',
                     alignItems: 'center',
                   }}>
-                    <Image source={require('./image/reading.png')} style={{padding:5,height:250,width:300,marginTop:10}} />
+                  <Image
+                    source={require('./image/reading.png')}
+                    style={{padding: 5, height: 250, width: 300, marginTop: 10}}
+                  />
                   <Text
                     style={{
                       fontSize: 16,
-                      color:"red",
-                      marginTop:20,
-                      textAlign:'center'
+                      color: 'red',
+                      marginTop: 20,
+                      textAlign: 'center',
                     }}>
                     {this.state.message}
                   </Text>
@@ -548,11 +557,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
 
     // borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.18,
-    shadowRadius: 1.0,
-    elevation: 1,
+    
   },
   iconC: {
     marginTop: 3,
@@ -571,4 +576,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: '5%',
   },
+
+  shadows:{
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 1},
+    shadowOpacity: 0.18,
+    shadowRadius: 1.0,
+    elevation: 1,
+  }
 });

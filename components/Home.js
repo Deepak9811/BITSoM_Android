@@ -73,6 +73,13 @@ export default class Home extends Component {
       upNdDownI: false,
       newsData: [],
       shownews: false,
+      homeHeadingData: '',
+      profileTextData:"",
+      accountTextData:"",
+      aboutTextData:"",
+      opacTextData:"",
+      resourcesTextData:"",
+      contactTextData:"",
     };
   }
   async componentDidMount() {
@@ -93,15 +100,76 @@ export default class Home extends Component {
       console.log('There has problem in AsyncStorage : ' + errro.message);
     }
 
-    this.getSliderData();
-    this.getQuote();
-    this.getEventDetails();
-    this.getFeedQnA();
-    this.getNewsData();
+   
+    this.getContentDetails();
+    
+
+    setTimeout(() => {
+      this.getSliderData();
+    }, 100);
+
+    setTimeout(() => {
+      this.getFeedQnA();
+    }, 200);
+
+    setTimeout(() => {
+      this.getEventDetails();
+    }, 300);
+
+    setTimeout(() => {
+      this.getNewsData();
+    }, 400);
+
+    setTimeout(() => {
+      this.getQuote();
+    }, 500);
+    
+  }
+
+ async getContentDetails() {
+    let url = `https://bitsomapi.libcon.in/api/getMenuContent`;
+    fetch(url, {
+      method: 'GET',
+      headers: {
+        Accepts: 'application/json',
+        'content-type': 'application/json',
+      },
+    }).then(result => {
+      result.json().then(async resp => {
+        console.log(resp.data[3]);
+        if (resp.status === 'success') {
+          this.setState({
+            //profile
+            profileTextData:resp.data[0].bodyText,
+            //account
+            accountTextData:resp.data[1].bodyText,
+             //about
+             aboutTextData:resp.data[2].bodyText,
+             //home
+            homeHeadingData: resp.data[3].bodyText,
+             //opac
+             opacTextData:resp.data[4].bodyText,
+              //resources
+              resourcesTextData:resp.data[5].bodyText,
+               //contact
+             contactTextData:resp.data[6].bodyText,
+             
+            
+
+          });
+
+          try {
+            await AsyncStorage.setItem("contactTextData",JSON.stringify(resp.data[6].bodyText))
+            
+          } catch (error) {
+            console.log(error.message)
+          }
+        }
+      });
+    });
   }
 
   getNewsData() {
-    console.log('hello');
     fetch(`http://bitsomapi.libcon.in/api/getNews`, {
       method: 'GET',
       headers: {
@@ -111,7 +179,7 @@ export default class Home extends Component {
     })
       .then(result => {
         result.json().then(resp => {
-          console.log('resp event details :- ', resp);
+          // console.log('resp event details :- ', resp);
           if (resp.status === 'success') {
             this.setState({
               newsData: resp.data,
@@ -133,7 +201,6 @@ export default class Home extends Component {
   }
 
   getEventDetails() {
-    console.log('hello');
     fetch(`https://bitsomapi.libcon.in/api/getEvent`, {
       method: 'GET',
       headers: {
@@ -143,7 +210,7 @@ export default class Home extends Component {
     })
       .then(result => {
         result.json().then(resp => {
-          console.log('resp event details :- ', resp);
+          // console.log('resp event details :- ', resp);
           if (resp.status === 'success') {
             this.setState({
               eventData: resp.data,
@@ -170,12 +237,10 @@ export default class Home extends Component {
 
   showFeed() {
     this.setState({showFeedBack: true});
-    console.log('show feed');
   }
 
   HideFeed() {
     this.setState({showFeedBack: false});
-    console.log('hide feed');
   }
 
   getFeedQnA() {
@@ -245,7 +310,7 @@ export default class Home extends Component {
             }
 
             // alert(Selected);
-            console.log('total rate :- ', Selected);
+            // console.log('total rate :- ', Selected);
 
             this.setState({
               startData: Selected,
@@ -492,27 +557,26 @@ export default class Home extends Component {
     return (
       <React.Fragment key={index}>
         <TouchableOpacity
-          style={{borderRadius: 8, marginBottom: '10%'}}
+          style={{
+            borderRadius: 10,
+            marginBottom: '10%',
+            shadowColor: '#000',
+            shadowOffset: {width: 0, height: 1},
+            shadowOpacity: 0.18,
+            shadowRadius: 1.0,
+            elevation: 1,
+          }}
           onPress={() => this.getBiblionumber(item)}>
           <View
             style={[
               {
-                marginTop: '5%',
                 alignItems: 'center',
                 justifyContent: 'center',
                 borderBottomRightRadius: 8,
                 borderBottomLeftRadius: 8,
               },
             ]}>
-            <View
-              style={{
-                borderRadius: 8,
-                shadowColor: '#000',
-                shadowOffset: {width: 0, height: 1},
-                shadowOpacity: 0.2,
-                shadowRadius: 2,
-                elevation: 5,
-              }}>
+            <View style={{}}>
               <Image
                 style={{
                   display: this.state.showImage ? 'flex' : 'none',
@@ -587,13 +651,13 @@ export default class Home extends Component {
   //   );
   // }
 
-  // componentWillUnmount() {
-  //   BackHandler.removeEventListener(
-  //     'hardwareBackPress',
-  //     RNExitApp.exitApp(),
-  //     // this.disableBackButton(),
-  //   );
-  // }
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      RNExitApp.exitApp(),
+      // this.disableBackButton(),
+    );
+  }
 
   disableBackButton() {
     BackHandler.exitApp();
@@ -680,9 +744,16 @@ export default class Home extends Component {
                       </TouchableOpacity>
                     </View>
                     <Text style={styles.uNme}>{this.state.name}</Text>
-                    <Text style={{marginTop: 10, color: '#FAFAFA'}}>
-                      Welcome to Learning Resource Center, BITSoM
-                    </Text>
+                    {/* <Text style={{marginTop: 10, color: '#FAFAFA'}}>
+                      Welcome to Learning Resource Center, BITSoM  */}
+
+                    <RenderHtml
+                      contentWidth={windowWidth}
+                      source={{
+                        html: `${this.state.homeHeadingData}`,
+                      }}
+                    />
+                    {/* </Text> */}
                   </View>
 
                   {/* ---------PROFILE */}
@@ -690,7 +761,7 @@ export default class Home extends Component {
                     <View style={{width: '31%', marginTop: 10}}>
                       <TouchableOpacity
                         style={styles.bxShoadow}
-                        onPress={() => this.props.navigation.push('Profile')}>
+                        onPress={() => this.props.navigation.navigate('Profile',{profileData:this.state.profileTextData})}>
                         <LinearGradient
                           colors={['#F3F3F3', '#F3F3F3']}
                           style={styles.commonGradient}>
@@ -726,7 +797,7 @@ export default class Home extends Component {
                       <TouchableOpacity
                         style={styles.bxShoadow}
                         onPress={() =>
-                          this.props.navigation.navigate('Accountss')
+                          this.props.navigation.navigate('Accountss',{accountData:this.state.accountTextData})
                         }>
                         <LinearGradient
                           colors={['#F3F3F3', '#F3F3F3']}
@@ -802,7 +873,7 @@ export default class Home extends Component {
                     <View style={{width: '31%', marginTop: 10}}>
                       <TouchableOpacity
                         style={styles.bxShoadow}
-                        onPress={() => this.props.navigation.push('Opac')}>
+                        onPress={() => this.props.navigation.push('Opac',{opacData:this.state.opacTextData})}>
                         <LinearGradient
                           colors={['#F3F3F3', '#F3F3F3']}
                           style={styles.commonGradient}>
@@ -842,7 +913,7 @@ export default class Home extends Component {
                     <View style={{width: '31%', marginLeft: 10, marginTop: 10}}>
                       <TouchableOpacity
                         style={styles.bxShoadow}
-                        onPress={() => this.props.navigation.push('Eresource')}>
+                        onPress={() => this.props.navigation.push('Eresource',{eresourceData:this.state.resourcesTextData})}>
                         <LinearGradient
                           colors={['#F3F3F3', '#F3F3F3']}
                           style={styles.commonGradient}>
@@ -1055,7 +1126,7 @@ export default class Home extends Component {
                           }}>
                           {this.state.newsData.map((item, i) => {
                             if (item.image !== '') {
-                              console.log('item image :- ', item.image);
+                              // console.log('item image :- ', item.image);
                               this.state.showNewsImage = true;
                             } else {
                               this.state.showNewsImage = false;
@@ -1624,3 +1695,5 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
 });
+
+

@@ -23,7 +23,9 @@ import Feather from 'react-native-vector-icons/Feather';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import LinearGradient from 'react-native-linear-gradient';
 
-const Contact = () => {
+import RenderHtml from 'react-native-render-html';
+
+const Contact = ({props,navigation}) => {
   const [loader, setloader] = useState(false);
   const [name, setname] = useState('');
   const [description, setdescription] = useState('');
@@ -31,11 +33,18 @@ const Contact = () => {
   const [hideThnk, sethideThnk] = useState(true);
   const [responseMsg, setresponseMsg] = useState('Thank You');
   const [showError, setshowError] = useState(true);
+  const [details, setdetails] = useState('')
 
   useEffect(async () => {
     try {
       const sName = JSON.parse(await AsyncStorage.getItem('sName'));
       const sNameLast = JSON.parse(await AsyncStorage.getItem('sNameLast'));
+      const details = JSON.parse(await AsyncStorage.getItem('contactTextData'));
+
+      console.log(details)
+
+      setdetails(details)
+      
 
       setname(sName + ' ' + sNameLast);
     } catch (error) {
@@ -47,8 +56,10 @@ const Contact = () => {
     if (description !== '') {
       setloader(true);
       let receiverEmail = 'Library.helpdesk@bitsom.edu.in';
+      // let receiverEmail = 'theartistnw@gmail.com';
       let enquiry = 'BITSoM Applicatin Contact Enquiry';
-      let url = `https://bitsomapi.libcon.in/api/sendEmail?toId=library.helpdesk@bitsom.edu.in&subject=${enquiry}&bodyText=${description}`;
+      // let url = `https://bitsomapi.libcon.in/api/sendEmail?toId=library.helpdesk@bitsom.edu.in&subject=${enquiry}&bodyText=${description}`;
+      let url = `https://bitsomapi.libcon.in/api/sendEmail?toId=${receiverEmail}&subject=${enquiry}&bodyText=${description}`;
       fetch(url, {
         method: 'POST',
         headers: {
@@ -102,7 +113,7 @@ const Contact = () => {
       <Appbar.Header style={styles.ttl}>
         <TouchableOpacity
           style={{paddingLeft: '2%'}}
-          onPress={() => this.props.navigation.goBack()}>
+          onPress={() => navigation.goBack()}>
           <AntDesign name="arrowleft" color="#05375a" size={25} />
         </TouchableOpacity>
         <Appbar.Content title="Contact US" />
@@ -117,19 +128,25 @@ const Contact = () => {
             <View style={styles.uDetail}>
               <Text style={styles.uNme}>Hello</Text>
               <Text style={styles.uNme}>{name}</Text>
-              <Text style={{marginTop: 10, color: '#8A8A8A'}}>
-                Welcome to Learning Resource Center, BITSoM
-              </Text>
+              
 
             </View>
 
             <View style={styles.info}>
-              <Text style={styles.fontInfo}>Dr. Sanjay Kataria</Text>
+              {/* <Text style={styles.fontInfo}>Dr. Sanjay Kataria</Text>
               <Text style={styles.fontInfo}>Librarian,</Text>
               <Text style={styles.fontInfo}>BITS- School of Management,</Text>
               <Text style={styles.fontInfo}>
                 E-mail: sanjay.kataria@bitsom.edu.in
-              </Text>
+                E-mail: Library.Helpdesk@bitsom.edu.in
+              </Text> */}
+
+              <RenderHtml
+                contentWidth={{width: 100}}
+                source={{
+                  html: `${details}`,
+                }}
+              />
             </View>
 
             {hideThnk && (

@@ -135,8 +135,11 @@ android {
         applicationId "com.bitsom"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 5
-        versionName "1.5"
+        versionCode 6
+        versionName "1.6"
+        manifestPlaceholders = [
+        appAuthRedirectScheme: 'graph-tutorial'
+        ]
     }
     signingConfigs {
         release {
@@ -207,6 +210,8 @@ dependencies {
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
     implementation project(':react-native-vector-icons')
+    implementation 'com.google.android.gms:play-services-auth:20.0.0'
+    implementation "androidx.browser:browser:1.2.0"
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
