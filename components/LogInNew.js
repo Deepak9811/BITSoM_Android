@@ -43,12 +43,10 @@ import {
 } from '@react-native-google-signin/google-signin';
 
 GoogleSignin.configure({
-  // ClientId:
-  //   '48774575517-o9j0crni6shsal3jnoerm1o19pdqkg05.apps.googleusercontent.com',
-  ClientId:
-    '842785997270-6hbv3bs7e6ifvfg35ojnov1t444rjld4.apps.googleusercontent.com',
-  // offlineAccess: true,
-  forceCodeForRefreshToken: true,
+  webClientId:
+    '842785997270-q7jqk66e76ctb8qrh1l7fmcoqgv483j3.apps.googleusercontent.com',
+  offlineAccess: true,
+  // forceCodeForRefreshToken: true,
 });
 
 const config: AuthConfiguration = {
@@ -98,7 +96,7 @@ export default class LogInNew extends Component {
       if (this.state.email !== null) {
         this.getUserAllData();
       } else {
-        console.log('Email is not null....');
+        console.log('helo');
       }
 
       console.log('user name =>', userInfo.user.email);
@@ -111,11 +109,6 @@ export default class LogInNew extends Component {
         console.warn('IN PROGRESS', error.message);
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
         // play services not available or outdated
-        ToastAndroid.showWithGravity(
-          'Something went wrong. Please try to another way to Sign In.',
-          ToastAndroid.LONG,
-          ToastAndroid.CENTER,
-        );
         console.warn('play services not available or outdated', error.message);
       } else {
         ToastAndroid.showWithGravity(
@@ -123,6 +116,7 @@ export default class LogInNew extends Component {
           ToastAndroid.LONG,
           ToastAndroid.CENTER,
         );
+        alert(error.message);
         console.warn('Meassage', error.message);
       }
     }
@@ -187,14 +181,13 @@ export default class LogInNew extends Component {
 
   getUserAllData() {
     if (
-      this.state.loaderMicrosoft !== true ||
-      this.state.loaderGoogle !== true
+      this.state.loaderMicrosoft === true ||
+      this.state.loaderGoogle === true
     ) {
+      this.setState({loader: false});
+    } else {
       this.setState({loader: true});
     }
-    // if(this.state.loaderGoogle !== true){
-    //   this.setState({loader: true});
-    // }
     // console.log(this.state.email, this.state.pass, this.state.purposeValue);
 
     let emails = this.state.email;
@@ -212,31 +205,46 @@ export default class LogInNew extends Component {
           if (resp.status === 'success') {
             if (resp.length !== 0) {
               if (this.state.other_LogIN === true) {
-                try {
-                  await AsyncStorage.setItem(
-                    'userId',
-                    JSON.stringify(resp.data.response[0][0]),
-                  );
-                  await AsyncStorage.setItem(
-                    'sName',
-                    JSON.stringify(resp.data.response[0][2]),
-                  );
-                  await AsyncStorage.setItem(
-                    'sNameLast',
-                    JSON.stringify(resp.data.response[0][3]),
-                  );
-                  await AsyncStorage.setItem(
-                    'email',
-                    JSON.stringify(resp.data.response[0][4]),
-                  );
+                if (this.state.email === resp.data.response[0][4]) {
+                  try {
+                    await AsyncStorage.setItem(
+                      'userId',
+                      JSON.stringify(resp.data.response[0][0]),
+                    );
+                    await AsyncStorage.setItem(
+                      'sName',
+                      JSON.stringify(resp.data.response[0][2]),
+                    );
+                    await AsyncStorage.setItem(
+                      'sNameLast',
+                      JSON.stringify(resp.data.response[0][3]),
+                    );
+                    await AsyncStorage.setItem(
+                      'email',
+                      JSON.stringify(resp.data.response[0][4]),
+                    );
 
+                    this.setState({
+                      userData: resp.data.response[0],
+                    });
+
+                    this.props.navigation.push('Home');
+                  } catch (error) {
+                    console.log('try : ', error);
+                  }
+                } else {
+                  Alert.alert(
+                    '',
+                    'Please enter your correct account details to login.',
+                    [{text: 'Okay'}],
+                    {cancelable: true},
+                  );
                   this.setState({
-                    userData: resp.data.response[0],
+                    loader: false,
+                    loaderMicrosoft: false,
+                    loaderGoogle: false,
+                    other_LogIN: false,
                   });
-
-                  this.props.navigation.push('Home');
-                } catch (error) {
-                  console.log('try : ', error);
                 }
               } else {
                 this.setState({
@@ -292,13 +300,17 @@ export default class LogInNew extends Component {
                       );
                       this.setState({
                         loader: false,
+                        other_LogIN: false,
                         loaderGoogle: false,
+                        loaderMicrosoft: false,
                       });
                     }
 
                     this.setState({
                       loader: false,
+                      other_LogIN: false,
                       loaderGoogle: false,
+                      loaderMicrosoft: false,
                     });
                   } catch (e) {
                     console.log({e});
@@ -307,24 +319,31 @@ export default class LogInNew extends Component {
                   Alert.alert(
                     '',
                     'Please enter your correct account details to login.',
+                    [{text: 'Okay'}],
+                    {cancelable: true},
                   );
                   this.setState({
                     loader: false,
+                    other_LogIN: false,
                     loaderGoogle: false,
+                    loaderMicrosoft: false,
                   });
                 }
               }
             }
           } else {
+            await GoogleSignin.revokeAccess();
+            await GoogleSignin.signOut();
             this.setState({
               loader: false,
               other_LogIN: false,
               loaderGoogle: false,
+              loaderMicrosoft: false,
             });
             Alert.alert(
               '',
               'Please enter your correct account details to login.',
-              [{text: 'Ok'}],
+              [{text: 'Okay'}],
               {cancelable: true},
             );
             // ToastAndroid.show(
@@ -453,10 +472,6 @@ export default class LogInNew extends Component {
                     <View style={styles.action}>
                       <FontAwesome name="user-o" color="#05375a" size={20} />
 
-                      <View style={{width: '86%'}}>
-
-                      
-
                       <TextInput
                         returnKeyType="next"
                         placeholder="Your Email"
@@ -471,13 +486,12 @@ export default class LogInNew extends Component {
                           });
                         }}
                       />
-                      </View>
                       {this.state.check_textInputChange ? (
-                        <Animatable.View animation="bounceIn" style={{alignItems:"center"}}>
+                        <Animatable.View animation="bounceIn">
                           <Feather
                             name="check-circle"
                             color="green"
-                            size={21}
+                            size={20}
                           />
                         </Animatable.View>
                       ) : null}
@@ -491,29 +505,26 @@ export default class LogInNew extends Component {
                   <View style={styles.action}>
                     <Feather name="lock" color="#05375a" size={20} />
 
-                    <View style={{width: '85%'}}>
-                      <TextInput
-                        secureTextEntry={
-                          this.state.secureTextEntry ? true : false
-                        }
-                        placeholderTextColor="#7F7F7F"
-                        returnKeyType="next"
-                        placeholder="Your Password"
-                        style={styles.textInput}
-                        value={this.state.pass}
-                        onChangeText={val => {
-                          this.handlePasswordChange(val);
-                          this.setState({
-                            pass: val,
-                          });
-                        }}
-                      />
-                    </View>
+                    <TextInput
+                      secureTextEntry={
+                        this.state.secureTextEntry ? true : false
+                      }
+                      placeholderTextColor="#7F7F7F"
+                      returnKeyType="next"
+                      placeholder="Your Password"
+                      style={styles.textInput}
+                      value={this.state.pass}
+                      onChangeText={val => {
+                        this.handlePasswordChange(val);
+                        this.setState({
+                          pass: val,
+                        });
+                      }}
+                    />
                     <TouchableOpacity
-                    style={{alignItems:"center",}}
                       onPress={() => this.updateSecureTextEntry()}>
                       {this.state.secureTextEntry ? (
-                        <Feather name="eye-off" color="grey" size={21} />
+                        <Feather name="eye-off" color="grey" size={20} />
                       ) : (
                         <TouchableOpacity
                           onPress={() =>
@@ -521,7 +532,7 @@ export default class LogInNew extends Component {
                               secureTextEntry: true,
                             })
                           }>
-                          <Feather name="eye" color="green" size={21} />
+                          <Feather name="eye" color="green" size={20} />
                         </TouchableOpacity>
                       )}
                     </TouchableOpacity>
@@ -550,7 +561,7 @@ export default class LogInNew extends Component {
                     </LinearGradient>
                   </TouchableOpacity>
 
-                  {/* <View style={styles.orBorder}></View>
+                  <View style={styles.orBorder}></View>
                   <View style={styles.or}>
                     <Text>OR</Text>
                   </View>
@@ -570,6 +581,10 @@ export default class LogInNew extends Component {
                       />
                     </View>
                     <View>
+                      {/* <Text style={[styles.buttonText, {color: '#de4d41'}]}>
+                        Log In With Google
+                      </Text> */}
+
                       {!this.state.loaderGoogle ? (
                         <View
                           style={{
@@ -589,6 +604,9 @@ export default class LogInNew extends Component {
                     </View>
                   </TouchableOpacity>
 
+                  {/* <View>
+          <GoogleSigninButton onPress={() => this.signIn()} />
+        </View> */}
 
                   <TouchableOpacity
                     onPress={() => this.microsoftLogIn()}
@@ -597,7 +615,7 @@ export default class LogInNew extends Component {
                       {
                         backgroundColor: '#0078d4',
                         marginTop: '5%',
-                        marginBottom: '30%',
+                        // marginBottom: '30%',
                       },
                     ]}>
                     <View style={styles.iconWrapper}>
@@ -609,6 +627,9 @@ export default class LogInNew extends Component {
                       />
                     </View>
                     <View style={[styles.btnTxtWrapper]}>
+                      {/* <Text style={[styles.buttonText, {color: '#fff'}]}>
+                        Log In With Microsoft
+                      </Text> */}
 
                       {!this.state.loaderMicrosoft ? (
                         <View style={{marginLeft: '19%'}}>
@@ -622,13 +643,13 @@ export default class LogInNew extends Component {
                         </View>
                       )}
                     </View>
-                  </TouchableOpacity> */}
+                  </TouchableOpacity>
 
                   <View
                     style={{
                       paddingHorizontal: 5,
                       paddingVertical: 15,
-                      marginTop: Platform.OS === 'ios' ? 0 : windowHeight / 2.8,
+                      marginTop: '28%',
                     }}>
                     <TouchableOpacity
                       onPress={() => Linking.openURL('https://libcon.in/')}

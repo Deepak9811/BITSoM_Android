@@ -40,6 +40,12 @@ import RenderHtml from 'react-native-render-html';
 import Entypo from 'react-native-vector-icons/Entypo';
 import {windowWidth} from './utils/Dimensions';
 
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
+
 export default class Home extends Component {
   constructor(props) {
     super(props);
@@ -682,6 +688,8 @@ export default class Home extends Component {
   }
 
   async clearToken() {
+    await GoogleSignin.revokeAccess();
+                  await GoogleSignin.signOut();
     await AsyncStorage.clear();
     // BackHandler.exitApp();
     RNExitApp.exitApp();
