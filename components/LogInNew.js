@@ -83,7 +83,7 @@ export default class LogInNew extends Component {
   signIn = async () => {
     this.setState({loader: false});
     try {
-      console.warn('hello');
+      console.warn('hello :- ',await GoogleSignin.hasPlayServices());
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
 
@@ -94,6 +94,7 @@ export default class LogInNew extends Component {
         loaderGoogle: true,
       });
       if (this.state.email !== null) {
+        await AsyncStorage.setItem("googleSignTrue",JSON.stringify(true))
         this.getUserAllData();
       } else {
         console.log('helo');
@@ -233,6 +234,8 @@ export default class LogInNew extends Component {
                     console.log('try : ', error);
                   }
                 } else {
+                  let key = 'googleSignTrue'
+                  await AsyncStorage.removeItem(key)
                   Alert.alert(
                     '',
                     'Please enter your correct account details to login.',
@@ -252,6 +255,9 @@ export default class LogInNew extends Component {
                 });
 
                 try {
+                  let key = 'googleSignTrue'
+                  await AsyncStorage.removeItem(key)
+                  
                   await AsyncStorage.setItem(
                     'userId',
                     JSON.stringify(resp.data.response[0][0]),
@@ -390,6 +396,8 @@ export default class LogInNew extends Component {
 
   microsoftLogIn = async () => {
     try {
+      let key = 'googleSignTrue'
+      console.log("clear : - ",await AsyncStorage.removeItem(key))
       this.setState({loaderMicrosoft: true});
       const result = await authorize(config);
       // console.log('result :- ', result);

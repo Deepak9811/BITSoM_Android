@@ -80,12 +80,12 @@ export default class Home extends Component {
       newsData: [],
       shownews: false,
       homeHeadingData: '',
-      profileTextData:"",
-      accountTextData:"",
-      aboutTextData:"",
-      opacTextData:"",
-      resourcesTextData:"",
-      contactTextData:"",
+      profileTextData: '',
+      accountTextData: '',
+      aboutTextData: '',
+      opacTextData: '',
+      resourcesTextData: '',
+      contactTextData: '',
     };
   }
   async componentDidMount() {
@@ -106,9 +106,7 @@ export default class Home extends Component {
       console.log('There has problem in AsyncStorage : ' + errro.message);
     }
 
-   
     this.getContentDetails();
-    
 
     setTimeout(() => {
       this.getSliderData();
@@ -129,10 +127,9 @@ export default class Home extends Component {
     setTimeout(() => {
       this.getQuote();
     }, 500);
-    
   }
 
- async getContentDetails() {
+  async getContentDetails() {
     let url = `https://bitsomapi.libcon.in/api/getMenuContent`;
     fetch(url, {
       method: 'GET',
@@ -146,29 +143,28 @@ export default class Home extends Component {
         if (resp.status === 'success') {
           this.setState({
             //profile
-            profileTextData:resp.data[0].bodyText,
+            profileTextData: resp.data[0].bodyText,
             //account
-            accountTextData:resp.data[1].bodyText,
-             //about
-             aboutTextData:resp.data[2].bodyText,
-             //home
+            accountTextData: resp.data[1].bodyText,
+            //about
+            aboutTextData: resp.data[2].bodyText,
+            //home
             homeHeadingData: resp.data[3].bodyText,
-             //opac
-             opacTextData:resp.data[4].bodyText,
-              //resources
-              resourcesTextData:resp.data[5].bodyText,
-               //contact
-             contactTextData:resp.data[6].bodyText,
-             
-            
-
+            //opac
+            opacTextData: resp.data[4].bodyText,
+            //resources
+            resourcesTextData: resp.data[5].bodyText,
+            //contact
+            contactTextData: resp.data[6].bodyText,
           });
 
           try {
-            await AsyncStorage.setItem("contactTextData",JSON.stringify(resp.data[6].bodyText))
-            
+            await AsyncStorage.setItem(
+              'contactTextData',
+              JSON.stringify(resp.data[6].bodyText),
+            );
           } catch (error) {
-            console.log(error.message)
+            console.log(error.message);
           }
         }
       });
@@ -688,11 +684,16 @@ export default class Home extends Component {
   }
 
   async clearToken() {
-    await GoogleSignin.revokeAccess();
-                  await GoogleSignin.signOut();
-    await AsyncStorage.clear();
-    // BackHandler.exitApp();
-    RNExitApp.exitApp();
+    if (JSON.parse(await AsyncStorage.getItem('googleSignTrue')) === true) {
+      await GoogleSignin.revokeAccess();
+      await GoogleSignin.signOut();
+      await AsyncStorage.clear();
+      RNExitApp.exitApp();
+    } else {
+      await AsyncStorage.clear();
+      // BackHandler.exitApp();
+      RNExitApp.exitApp();
+    }
   }
 
   render() {
@@ -769,7 +770,11 @@ export default class Home extends Component {
                     <View style={{width: '31%', marginTop: 10}}>
                       <TouchableOpacity
                         style={styles.bxShoadow}
-                        onPress={() => this.props.navigation.navigate('Profile',{profileData:this.state.profileTextData})}>
+                        onPress={() =>
+                          this.props.navigation.navigate('Profile', {
+                            profileData: this.state.profileTextData,
+                          })
+                        }>
                         <LinearGradient
                           colors={['#F3F3F3', '#F3F3F3']}
                           style={styles.commonGradient}>
@@ -805,7 +810,9 @@ export default class Home extends Component {
                       <TouchableOpacity
                         style={styles.bxShoadow}
                         onPress={() =>
-                          this.props.navigation.navigate('Accountss',{accountData:this.state.accountTextData})
+                          this.props.navigation.navigate('Accountss', {
+                            accountData: this.state.accountTextData,
+                          })
                         }>
                         <LinearGradient
                           colors={['#F3F3F3', '#F3F3F3']}
@@ -881,7 +888,11 @@ export default class Home extends Component {
                     <View style={{width: '31%', marginTop: 10}}>
                       <TouchableOpacity
                         style={styles.bxShoadow}
-                        onPress={() => this.props.navigation.push('Opac',{opacData:this.state.opacTextData})}>
+                        onPress={() =>
+                          this.props.navigation.push('Opac', {
+                            opacData: this.state.opacTextData,
+                          })
+                        }>
                         <LinearGradient
                           colors={['#F3F3F3', '#F3F3F3']}
                           style={styles.commonGradient}>
@@ -921,7 +932,11 @@ export default class Home extends Component {
                     <View style={{width: '31%', marginLeft: 10, marginTop: 10}}>
                       <TouchableOpacity
                         style={styles.bxShoadow}
-                        onPress={() => this.props.navigation.push('Eresource',{eresourceData:this.state.resourcesTextData})}>
+                        onPress={() =>
+                          this.props.navigation.push('Eresource', {
+                            eresourceData: this.state.resourcesTextData,
+                          })
+                        }>
                         <LinearGradient
                           colors={['#F3F3F3', '#F3F3F3']}
                           style={styles.commonGradient}>
@@ -1703,5 +1718,3 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
 });
-
-
